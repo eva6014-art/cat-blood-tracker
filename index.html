@@ -275,16 +275,59 @@ const IND = {
   MCV:  {name:'MCV（平均紅血球容積）',  unit:'fL',    low:35.9, high:53.1 },
   MCH:  {name:'MCH（平均血紅素量）',    unit:'pg',    low:11.8, high:17.3 },
   MCHC: {name:'MCHC（平均血紅素濃度）', unit:'g/dL',  low:28.1, high:35.8 },
+  RDW:  {name:'RDW（紅血球分布寬度）',  unit:'%',     low:15.0, high:27.0 },
   WBC:  {name:'WBC（白血球）',          unit:'K/μL',  low:2.87, high:17.02},
+  NEU:  {name:'NEU（嗜中性球）',        unit:'K/μL',  low:2.30, high:10.29},
+  LYM:  {name:'LYM（淋巴球）',          unit:'K/μL',  low:0.92, high:6.88 },
+  MONO: {name:'MONO（單核球）',          unit:'K/μL',  low:0.05, high:0.67 },
+  EOS:  {name:'EOS（嗜酸性球）',        unit:'K/μL',  low:0.17, high:1.57 },
+  BASO: {name:'BASO（嗜鹼性球）',       unit:'K/μL',  low:0.01, high:0.26 },
   PLT:  {name:'PLT（血小板）',          unit:'K/μL',  low:151,  high:600  },
+  MPV:  {name:'MPV（平均血小板容積）',  unit:'fL',    low:11.4, high:21.6 },
+  PCT:  {name:'PCT（血小板壓積）',      unit:'%',     low:0.17, high:0.86 },
   BUN:  {name:'BUN（尿素氮）',          unit:'mg/dL', low:16,   high:36   },
   CREA: {name:'CREA（肌酸酐）',         unit:'mg/dL', low:0.8,  high:2.4  },
   ALT:  {name:'ALT（肝臟酵素）',        unit:'U/L',   low:12,   high:130  },
   PHOS: {name:'PHOS（磷）',             unit:'mg/dL', low:3.1,  high:7.5  },
   TP:   {name:'TP（總蛋白）',           unit:'g/dL',  low:5.4,  high:8.2  },
   GLU:  {name:'GLU（血糖）',            unit:'mg/dL', low:70,   high:150  },
-  SDMA: {name:'SDMA',                   unit:'μg/dL', low:0,    high:14   },
+  SDMA: {name:'SDMA（對稱二甲基精胺酸）',unit:'μg/dL',low:0,   high:14   },
 };
+
+// 其他項目的中文對照（用於 otherValues 顯示）
+const NAME_MAP = {
+  '%NEU':'%NEU（嗜中性球比例）', '%LYM':'%LYM（淋巴球比例）',
+  '%MONO':'%MONO（單核球比例）', '%EOS':'%EOS（嗜酸性球比例）',
+  '%BASO':'%BASO（嗜鹼性球比例）', '%RETIC':'%RETIC（網狀紅血球比例）',
+  'RETIC':'RETIC（網狀紅血球）', 'nRBC':'nRBC（有核紅血球）',
+  'RDW':'RDW（紅血球分布寬度）', 'MPV':'MPV（平均血小板容積）',
+  'PCT':'PCT（血小板壓積）', 'PDW':'PDW（血小板分布寬度）',
+  'NEU':'NEU（嗜中性球）', 'LYM':'LYM（淋巴球）',
+  'MONO':'MONO（單核球）', 'EOS':'EOS（嗜酸性球）',
+  'BASO':'BASO（嗜鹼性球）', 'BUN/CREA':'BUN/CREA（尿素氮肌酸酐比）',
+  'ALB':'ALB（白蛋白）', 'GLOB':'GLOB（球蛋白）', 'A/G':'A/G（白蛋白球蛋白比）',
+  'AST':'AST（天門冬酸轉胺酶）', 'ALP':'ALP（鹼性磷酸酶）',
+  'GGT':'GGT（麩胺酸轉移酶）', 'TBIL':'TBIL（總膽紅素）',
+  'CHOL':'CHOL（膽固醇）', 'TG':'TG（三酸甘油脂）',
+  'CA':'CA（鈣）', 'NA':'NA（鈉）', 'K':'K（鉀）', 'CL':'CL（氯）',
+  'TCO2':'TCO2（碳酸氫根）', 'AG':'AG（陰離子間隙）',
+  'LIPA':'LIPA（脂肪酶）', 'AMYL':'AMYL（澱粉酶）',
+  'CK':'CK（肌酸激酶）', 'T4':'T4（甲狀腺素）', 'fT4':'fT4（游離甲狀腺素）',
+  'PLT':'PLT（血小板）', 'MCV':'MCV（平均紅血球容積）',
+  'MCH':'MCH（平均血紅素量）', 'MCHC':'MCHC（平均血紅素濃度）',
+};
+
+function translateName(raw){
+  if(!raw) return raw;
+  const key = raw.trim().toUpperCase();
+  // 先查完整 key
+  for(const [k,v] of Object.entries(NAME_MAP)){
+    if(k.toUpperCase()===key) return v;
+  }
+  // 再查 IND
+  if(IND[key]) return IND[key].name;
+  return raw;
+}
 
 const DEMO = [
   {date:'2024-03-10',values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2},otherValues:[],summary:'各項數值均在正常範圍內，整體狀況良好。'},
@@ -549,7 +592,8 @@ function showResult(data){
   (data.otherValues||[]).forEach(item=>{
     if(!item.name)return;
     const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
-    tbody.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-size:14px;font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td style="color:var(--tx3);font-size:12px">${item.range||''}</td><td>${badge(st2)}</td></tr>`;
+    const displayName=translateName(item.name);
+    tbody.innerHTML+=`<tr><td style="font-weight:500">${displayName}</td><td style="font-size:14px;font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td style="color:var(--tx3);font-size:12px">${item.range||''}</td><td>${badge(st2)}</td></tr>`;
   });
   document.getElementById('res-summary').textContent=data.summary||'';
 }
@@ -682,7 +726,8 @@ function viewRec(idx){
   (r.otherValues||[]).forEach(item=>{
     if(!item.name)return;
     const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
-    b.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td>${badge(st2)}</td></tr>`;
+    const displayName=translateName(item.name);
+    b.innerHTML+=`<tr><td style="font-weight:500">${displayName}</td><td style="font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td>${badge(st2)}</td></tr>`;
   });
   document.getElementById('vm-summary').textContent=r.summary||'';
   document.getElementById('modal-view').style.display='flex';
