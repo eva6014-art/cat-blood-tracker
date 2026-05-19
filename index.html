@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-:root {
+:root{
   --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede8;
   --tx:#1a1a18;--tx2:#6b6b67;--tx3:#9a9a96;
   --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
@@ -15,14 +15,12 @@
   --ac:#534AB7;--acbg:#EEEDFE;
   --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
 }
-@media(prefers-color-scheme:dark){
-  :root{
-    --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2c;
-    --tx:#f0efe8;--tx2:#a8a8a2;--tx3:#6b6b67;
-    --bd:rgba(255,255,255,0.12);--bd2:rgba(255,255,255,0.22);
-    --ac:#AFA9EC;--acbg:#26215C;
-  }
-}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2c;
+  --tx:#f0efe8;--tx2:#a8a8a2;--tx3:#6b6b67;
+  --bd:rgba(255,255,255,0.12);--bd2:rgba(255,255,255,0.22);
+  --ac:#AFA9EC;--acbg:#26215C;
+}}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:100vh;padding:1.5rem 1rem}
 .wrap{max-width:780px;margin:0 auto}
@@ -36,13 +34,13 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:10
 .tab i{font-size:16px}
 .panel{display:none}.panel.active{display:block}
 .card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--tx);text-decoration:none;font-family:var(--font)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--tx);font-family:var(--font)}
 .btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
 .btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}.btn-primary:hover{opacity:.88}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-danger{color:#E24B4A}
 .upload-zone{border:1.5px dashed var(--bd2);border-radius:var(--rl);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
-.upload-zone:hover,.upload-zone.dragging{border-color:var(--ac);background:var(--acbg)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--ac);background:var(--acbg)}
 .upload-zone i{font-size:40px;color:var(--tx3);display:block;margin-bottom:14px}
 .upload-zone p{font-size:14px;color:var(--tx2)}
 .upload-zone small{font-size:12px;color:var(--tx3);margin-top:6px;display:block}
@@ -51,29 +49,23 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:10
 .dots span{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:bop 1.2s infinite}
 .dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
 @keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-.err-box{display:none;background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595;border-radius:var(--rm);padding:12px 16px;font-size:13px;line-height:1.6;margin:1rem 0}
-@media(prefers-color-scheme:dark){.err-box{background:#501313;color:#F7C1C1;border-color:#A32D2D}}
+.err-box{display:none;border-radius:var(--rm);padding:14px 16px;font-size:13px;line-height:1.6;margin:1rem 0;background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
+@media(prefers-color-scheme:dark){.err-box{background:#501313;color:#F7C1C1;border-color:#791F1F}}
+.info-box{background:var(--acbg);color:var(--ac);border-radius:var(--rm);padding:12px 16px;font-size:13px;line-height:1.6;margin-bottom:1rem;border:0.5px solid var(--ac)}
 table{width:100%;border-collapse:collapse}
 th{text-align:left;font-weight:500;color:var(--tx2);font-size:12px;padding:6px 6px 8px 0;border-bottom:0.5px solid var(--bd);letter-spacing:.02em}
 td{padding:8px 6px 8px 0;border-bottom:0.5px solid var(--bd);font-size:13px;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 .badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:500}
 .badge i{font-size:12px}
-.ok{background:#EAF3DE;color:#3B6D11}
-.hi{background:#FCEBEB;color:#A32D2D}
-.lo{background:#FAEEDA;color:#854F0B}
-.na{background:var(--bg2);color:var(--tx3)}
-@media(prefers-color-scheme:dark){
-  .ok{background:#173404;color:#C0DD97}
-  .hi{background:#501313;color:#F7C1C1}
-  .lo{background:#412402;color:#FAC775}
-}
+.ok{background:#EAF3DE;color:#3B6D11}.hi{background:#FCEBEB;color:#A32D2D}.lo{background:#FAEEDA;color:#854F0B}.na{background:var(--bg2);color:var(--tx3)}
+@media(prefers-color-scheme:dark){.ok{background:#173404;color:#C0DD97}.hi{background:#501313;color:#F7C1C1}.lo{background:#412402;color:#FAC775}}
 .mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
 .mcard{background:var(--bg2);border-radius:var(--rm);padding:.875rem 1rem}
 .mcard .ml{font-size:12px;color:var(--tx2);margin-bottom:4px}
 .mcard .mv{font-size:22px;font-weight:500}
 .mcard .ms{font-size:11px;color:var(--tx3);margin-top:2px}
-.chart-wrap{position:relative;width:100%;height:240px;margin-bottom:1rem}
+.chart-wrap{position:relative;width:100%;height:240px}
 .slabel{font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin:1.25rem 0 .75rem}
 .frow{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
 select{font-size:13px;padding:7px 10px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx);cursor:pointer;font-family:var(--font)}
@@ -88,26 +80,23 @@ select{font-size:13px;padding:7px 10px;border-radius:var(--rm);border:0.5px soli
 .rhint{font-size:10px;color:var(--tx3);margin-top:3px}
 .demo-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:14px;font-size:12px;color:var(--tx3)}
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
-.modal{background:var(--bg);border-radius:var(--rx);padding:1.5rem;max-width:500px;width:100%;border:0.5px solid var(--bd);max-height:90vh;overflow-y:auto}
+.modal{background:var(--bg);border-radius:var(--rx);padding:1.5rem;max-width:520px;width:100%;border:0.5px solid var(--bd);max-height:90vh;overflow-y:auto}
 .modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
 .mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
-.api-note{background:var(--acbg);color:var(--ac);border-radius:var(--rm);padding:10px 14px;font-size:12px;line-height:1.6;margin-bottom:1rem}
-input[type=text],input[type=password]{width:100%;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--rm);font-size:13px;color:var(--tx);background:var(--bg);font-family:var(--font)}
+.field-label{font-size:12px;color:var(--tx2);display:block;margin:12px 0 4px}
+input[type=text],input[type=password],input[type=url]{width:100%;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--rm);font-size:13px;color:var(--tx);background:var(--bg);font-family:var(--font)}
+input:focus{outline:none;box-shadow:0 0 0 2px var(--ac)40}
 .api-row{display:flex;gap:8px;align-items:center}
 .api-row input{flex:1}
+.step{display:flex;gap:10px;margin-bottom:12px;font-size:13px;line-height:1.6}
+.step-num{width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
 footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding-bottom:1rem}
-.tag-grp{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
-.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:0.5px solid var(--bd);color:var(--tx2)}
-@media(max-width:500px){
-  th:nth-child(4),td:nth-child(4){display:none}
-  .tab span{display:none}
-}
+@media(max-width:500px){th:nth-child(4),td:nth-child(4){display:none}.tab span{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- Header -->
 <div class="hdr">
   <div class="hdr-icon"><i class="ti ti-paw" aria-hidden="true"></i></div>
   <div>
@@ -120,11 +109,10 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   </div>
 </div>
 
-<!-- Tabs -->
 <div class="tabs">
-  <button class="tab active" onclick="tab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span></button>
-  <button class="tab" onclick="tab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span></button>
-  <button class="tab" onclick="tab('history')" id="tab-history"><i class="ti ti-history" aria-hidden="true"></i><span>歷史紀錄</span></button>
+  <button class="tab active" onclick="goTab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span></button>
+  <button class="tab" onclick="goTab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span></button>
+  <button class="tab" onclick="goTab('history')" id="tab-history"><i class="ti ti-history" aria-hidden="true"></i><span>歷史紀錄</span></button>
 </div>
 
 <!-- SCAN -->
@@ -132,8 +120,8 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   <div id="upload-area">
     <div class="upload-zone" id="dropzone"
          onclick="document.getElementById('finput').click()"
-         ondragover="ev.preventDefault();this.classList.add('dragging')"
-         ondragleave="this.classList.remove('dragging')"
+         ondragover="event.preventDefault();this.classList.add('drag')"
+         ondragleave="this.classList.remove('drag')"
          ondrop="onDrop(event)">
       <i class="ti ti-cloud-upload" aria-hidden="true"></i>
       <p>點擊或拖曳上傳血液報告</p>
@@ -149,7 +137,7 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   <div id="thinking" style="display:none">
     <div class="thinking">
       <div class="dots"><span></span><span></span><span></span></div>
-      <span id="think-msg">AI 正在分析血液報告，識別數值中⋯⋯</span>
+      <span>AI 正在分析血液報告，識別數值中⋯⋯</span>
     </div>
   </div>
 
@@ -188,36 +176,26 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 <div id="panel-trends" class="panel">
   <div class="frow">
     <select id="tr-ind" onchange="renderTrends()">
-      <option value="RBC">RBC（紅血球）</option>
-      <option value="HCT">HCT（血容比）</option>
-      <option value="HGB">HGB（血紅素）</option>
-      <option value="MCV">MCV</option><option value="MCH">MCH</option><option value="MCHC">MCHC</option>
-      <option value="WBC">WBC（白血球）</option>
-      <option value="PLT">PLT（血小板）</option>
-      <option value="BUN">BUN（尿素氮）</option>
-      <option value="CREA">CREA（肌酸酐）</option>
-      <option value="ALT">ALT（肝臟酵素）</option>
-      <option value="PHOS">PHOS（磷）</option>
-      <option value="TP">TP（總蛋白）</option>
-      <option value="GLU">GLU（血糖）</option>
+      <option value="RBC">RBC（紅血球）</option><option value="HCT">HCT（血容比）</option>
+      <option value="HGB">HGB（血紅素）</option><option value="MCV">MCV</option>
+      <option value="MCH">MCH</option><option value="MCHC">MCHC</option>
+      <option value="WBC">WBC（白血球）</option><option value="PLT">PLT（血小板）</option>
+      <option value="BUN">BUN（尿素氮）</option><option value="CREA">CREA（肌酸酐）</option>
+      <option value="ALT">ALT（肝臟酵素）</option><option value="PHOS">PHOS（磷）</option>
+      <option value="TP">TP（總蛋白）</option><option value="GLU">GLU（血糖）</option>
       <option value="SDMA">SDMA</option>
     </select>
     <select id="tr-period" onchange="renderTrends()">
-      <option value="all">全部紀錄</option>
-      <option value="6">近 6 筆</option>
-      <option value="3">近 3 筆</option>
+      <option value="all">全部紀錄</option><option value="6">近 6 筆</option><option value="3">近 3 筆</option>
     </select>
   </div>
   <div id="tr-empty" class="empty" style="display:none">
-    <i class="ti ti-chart-line" aria-hidden="true"></i>
-    尚無資料<br>
-    <button class="btn btn-sm" style="margin-top:12px" onclick="tab('scan')">去掃描第一份報告</button>
+    <i class="ti ti-chart-line" aria-hidden="true"></i>尚無資料<br>
+    <button class="btn btn-sm" style="margin-top:12px" onclick="goTab('scan')">去掃描第一份報告</button>
   </div>
   <div id="tr-content" style="display:none">
     <div class="mgrid" id="tr-summary"></div>
-    <div class="card" style="padding:1rem">
-      <div class="chart-wrap"><canvas id="tChart" role="img" aria-label="血液數值趨勢折線圖"></canvas></div>
-    </div>
+    <div class="card" style="padding:1rem"><div class="chart-wrap"><canvas id="tChart" role="img" aria-label="血液數值趨勢折線圖"></canvas></div></div>
     <p class="slabel">所有指標概覽</p>
     <div class="card" style="padding:1rem 1.25rem"><div id="tr-overview"></div></div>
   </div>
@@ -231,13 +209,10 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
     <input type="file" id="iinput" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
   <div id="h-empty" class="empty" style="display:none">
-    <i class="ti ti-notes" aria-hidden="true"></i>
-    還沒有任何紀錄<br>
-    <button class="btn btn-sm" style="margin-top:12px" onclick="tab('scan')">去掃描第一份報告</button>
+    <i class="ti ti-notes" aria-hidden="true"></i>還沒有任何紀錄<br>
+    <button class="btn btn-sm" style="margin-top:12px" onclick="goTab('scan')">去掃描第一份報告</button>
   </div>
-  <div class="card" id="h-card" style="display:none;padding:.75rem 1.25rem">
-    <div id="h-list"></div>
-  </div>
+  <div class="card" id="h-card" style="display:none;padding:.75rem 1.25rem"><div id="h-list"></div></div>
 </div>
 
 <footer>貓咪血液追蹤系統 · 資料僅存於本機瀏覽器 · 僅供參考，請以獸醫診斷為準</footer>
@@ -247,14 +222,22 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 <div id="modal-settings" class="modal-ov" style="display:none" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
     <h3><i class="ti ti-settings" aria-hidden="true"></i> 設定</h3>
-    <div class="api-note">
-      <strong>Anthropic API 金鑰</strong><br>
-      前往 <a href="https://console.anthropic.com" target="_blank" style="color:inherit">console.anthropic.com</a> 取得金鑰。金鑰僅儲存於瀏覽器本機，不會外傳。
+
+    <div style="background:var(--bg2);border-radius:var(--rm);padding:14px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px">如何設定（一次，免費）</div>
+      <div class="step"><div class="step-num">1</div><div>前往 <a href="https://dash.cloudflare.com" target="_blank" style="color:var(--ac)">dash.cloudflare.com</a> 免費註冊 → Workers &amp; Pages → Create Worker</div></div>
+      <div class="step"><div class="step-num">2</div><div>貼上 <code style="background:var(--bd);padding:1px 5px;border-radius:4px">worker.js</code>（和此 HTML 同資料夾）的程式碼並儲存</div></div>
+      <div class="step"><div class="step-num">3</div><div>Worker → Settings → Variables → 新增 Secret：<code style="background:var(--bd);padding:1px 5px;border-radius:4px">ANTHROPIC_API_KEY</code> = 你的 API 金鑰</div></div>
+      <div class="step"><div class="step-num">4</div><div>複製 Worker URL（格式：<code style="background:var(--bd);padding:1px 5px;border-radius:4px">https://xxx.workers.dev</code>）貼到下方</div></div>
     </div>
-    <div class="api-row">
-      <input type="password" id="api-inp" placeholder="sk-ant-api03-...">
-      <button class="btn btn-sm" onclick="toggleVis()"><i class="ti ti-eye" aria-hidden="true"></i></button>
+
+    <label class="field-label">Cloudflare Worker URL</label>
+    <input type="url" id="worker-url-inp" placeholder="https://你的名稱.workers.dev">
+
+    <div style="margin-top:12px;font-size:12px;color:var(--tx3)">
+      API 金鑰存放在 Cloudflare Worker 的環境變數中，不會出現在瀏覽器裡，更安全。
     </div>
+
     <div class="mfoot">
       <button class="btn" onclick="closeSettings()">取消</button>
       <button class="btn btn-primary" onclick="saveSettings()"><i class="ti ti-check" aria-hidden="true"></i> 儲存</button>
@@ -273,249 +256,214 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 </div>
 
 <script>
-// ── Indicators ──────────────────────────────────────────────────────────────
+// ── Indicators ────────────────────────────────────────────────────────────────
 const IND = {
-  RBC:  {name:'RBC（紅血球）',        unit:'M/μL',   low:6.54, high:12.20},
-  HCT:  {name:'HCT（血容比）',        unit:'%',      low:30.3, high:52.3 },
-  HGB:  {name:'HGB（血紅素）',        unit:'g/dL',   low:9.8,  high:16.2 },
-  MCV:  {name:'MCV（平均紅血球容積）',unit:'fL',     low:35.9, high:53.1 },
-  MCH:  {name:'MCH（平均血紅素量）',  unit:'pg',     low:11.8, high:17.3 },
-  MCHC: {name:'MCHC（平均血紅素濃度）',unit:'g/dL', low:28.1, high:35.8 },
-  WBC:  {name:'WBC（白血球）',        unit:'K/μL',   low:2.87, high:17.02},
-  PLT:  {name:'PLT（血小板）',        unit:'K/μL',   low:151,  high:600  },
-  BUN:  {name:'BUN（尿素氮）',        unit:'mg/dL',  low:16,   high:36   },
-  CREA: {name:'CREA（肌酸酐）',       unit:'mg/dL',  low:0.8,  high:2.4  },
-  ALT:  {name:'ALT（肝臟酵素）',      unit:'U/L',    low:12,   high:130  },
-  PHOS: {name:'PHOS（磷）',           unit:'mg/dL',  low:3.1,  high:7.5  },
-  TP:   {name:'TP（總蛋白）',         unit:'g/dL',   low:5.4,  high:8.2  },
-  GLU:  {name:'GLU（血糖）',          unit:'mg/dL',  low:70,   high:150  },
-  SDMA: {name:'SDMA',                 unit:'μg/dL',  low:0,    high:14   },
+  RBC:  {name:'RBC（紅血球）',          unit:'M/μL',  low:6.54, high:12.20},
+  HCT:  {name:'HCT（血容比）',          unit:'%',     low:30.3, high:52.3 },
+  HGB:  {name:'HGB（血紅素）',          unit:'g/dL',  low:9.8,  high:16.2 },
+  MCV:  {name:'MCV（平均紅血球容積）',  unit:'fL',    low:35.9, high:53.1 },
+  MCH:  {name:'MCH（平均血紅素量）',    unit:'pg',    low:11.8, high:17.3 },
+  MCHC: {name:'MCHC（平均血紅素濃度）', unit:'g/dL',  low:28.1, high:35.8 },
+  WBC:  {name:'WBC（白血球）',          unit:'K/μL',  low:2.87, high:17.02},
+  PLT:  {name:'PLT（血小板）',          unit:'K/μL',  low:151,  high:600  },
+  BUN:  {name:'BUN（尿素氮）',          unit:'mg/dL', low:16,   high:36   },
+  CREA: {name:'CREA（肌酸酐）',         unit:'mg/dL', low:0.8,  high:2.4  },
+  ALT:  {name:'ALT（肝臟酵素）',        unit:'U/L',   low:12,   high:130  },
+  PHOS: {name:'PHOS（磷）',             unit:'mg/dL', low:3.1,  high:7.5  },
+  TP:   {name:'TP（總蛋白）',           unit:'g/dL',  low:5.4,  high:8.2  },
+  GLU:  {name:'GLU（血糖）',            unit:'mg/dL', low:70,   high:150  },
+  SDMA: {name:'SDMA',                   unit:'μg/dL', low:0,    high:14   },
 };
 
-// Also accept CRE as alias for CREA
-const KEY_ALIAS = {CRE:'CREA'};
-
-// ── Demo data ────────────────────────────────────────────────────────────────
+// ── Demo ──────────────────────────────────────────────────────────────────────
 const DEMO = [
-  {date:'2024-03-10', values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2}, otherValues:[], summary:'各項數值均在正常範圍內，貓咪整體狀況良好。'},
-  {date:'2024-09-18', values:{RBC:7.0,HCT:36,HGB:11.5,WBC:9.1,PLT:260,BUN:24,CREA:1.6,ALT:82,PHOS:4.8}, otherValues:[], summary:'BUN 與 CREA 略有上升，ALT 偏高需追蹤，建議增加飲水並縮短回診間隔。'},
-  {date:'2025-01-10', values:{RBC:6.6,HCT:34,HGB:10.8,WBC:10.3,PLT:240,BUN:30,CREA:2.1,ALT:180,PHOS:5.5}, otherValues:[], summary:'CREA 接近上限，ALT 明顯偏高，腎臟與肝臟指標需密切追蹤，建議與獸醫討論治療方案。'},
-  {date:'2026-05-09', values:{RBC:5.5,HCT:27.4,HGB:10.2,MCH:18.5,MCHC:37.2,WBC:8.22,PLT:226,BUN:32,CREA:2.7,ALT:427,PHOS:5.9}, otherValues:[{name:'MCV',value:'49.8',unit:'fL',range:'35.9-53.1',status:'正常'},{name:'RDW',value:'20.4',unit:'%',range:'15.0-27.0',status:'正常'},{name:'NEU',value:'5.53',unit:'K/μL',range:'2.30-10.29',status:'正常'},{name:'LYM',value:'1.69',unit:'K/μL',range:'0.92-6.88',status:'正常'},{name:'BUN/CREA',value:'12',unit:'',range:'',status:'正常'}], summary:'⚠️ 本次報告有多項異常：CREA 2.7（偏高，腎臟指標惡化）、ALT 427（嚴重偏高，肝臟問題）、MCH 18.5 偏高、HCT 27.4 偏低（輕度貧血）。建議立即與獸醫討論肝腎功能治療方案，不宜延誤。'},
+  {date:'2024-03-10',values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2},otherValues:[],summary:'各項數值均在正常範圍內，整體狀況良好。建議維持目前飲食，按時回診。'},
+  {date:'2024-09-18',values:{RBC:7.0,HCT:36,HGB:11.5,WBC:9.1,PLT:260,BUN:24,CREA:1.6,ALT:82,PHOS:4.8},otherValues:[],summary:'BUN 與 CREA 略有上升，ALT 偏高需追蹤，建議增加飲水並縮短回診間隔。'},
+  {date:'2025-01-10',values:{RBC:6.6,HCT:34,HGB:10.8,WBC:10.3,PLT:240,BUN:30,CREA:2.1,ALT:180,PHOS:5.5},otherValues:[],summary:'CREA 接近上限，ALT 明顯偏高，建議與獸醫討論治療方案。'},
+  {date:'2026-05-09',values:{RBC:5.5,HCT:27.4,HGB:10.2,MCH:18.5,MCHC:37.2,WBC:8.22,PLT:226,BUN:32,CREA:2.7,ALT:427,PHOS:5.9},
+   otherValues:[{name:'MCV',value:'49.8',unit:'fL',range:'35.9-53.1',status:'正常'},{name:'NEU',value:'5.53',unit:'K/μL',range:'2.30-10.29',status:'正常'},{name:'LYM',value:'1.69',unit:'K/μL',range:'0.92-6.88',status:'正常'}],
+   summary:'⚠️ CREA 2.7 偏高（腎臟功能下降）、ALT 427 嚴重偏高（肝臟問題）、MCH 偏高、HCT 27.4 偏低（輕度貧血）。建議立即與獸醫討論治療方案。'},
 ];
 
-// ── State ────────────────────────────────────────────────────────────────────
-let records = [];
-let catName = '我的貓咪';
-let apiKey  = '';
-let chart   = null;
-let pending = null;
+// ── State ─────────────────────────────────────────────────────────────────────
+let records=[], catName='我的貓咪', workerUrl='', chart=null, pending=null;
 
-function load() {
-  try {
-    const r = localStorage.getItem('cbr'); if(r) records = JSON.parse(r);
-    const n = localStorage.getItem('cbn'); if(n) { catName=n; document.getElementById('cat-name').textContent=n; }
-    const k = localStorage.getItem('cbk'); if(k) apiKey=k;
-  } catch(e){}
+function load(){
+  try{
+    const r=localStorage.getItem('cbr'); if(r) records=JSON.parse(r);
+    const n=localStorage.getItem('cbn'); if(n){catName=n;document.getElementById('cat-name').textContent=n;}
+    const w=localStorage.getItem('cbw'); if(w) workerUrl=w;
+  }catch(e){}
 }
-function save() {
-  try {
-    localStorage.setItem('cbr', JSON.stringify(records));
-    localStorage.setItem('cbn', catName);
-    if(apiKey) localStorage.setItem('cbk', apiKey);
-  } catch(e){}
+function persist(){
+  try{
+    localStorage.setItem('cbr',JSON.stringify(records));
+    localStorage.setItem('cbn',catName);
+    if(workerUrl) localStorage.setItem('cbw',workerUrl);
+  }catch(e){}
 }
 
-// ── Tabs ─────────────────────────────────────────────────────────────────────
-function tab(t) {
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+function goTab(t){
   ['scan','trends','history'].forEach(id=>{
-    document.getElementById('tab-'+id).classList.toggle('active', id===t);
-    document.getElementById('panel-'+id).classList.toggle('active', id===t);
+    document.getElementById('tab-'+id).classList.toggle('active',id===t);
+    document.getElementById('panel-'+id).classList.toggle('active',id===t);
   });
-  if(t==='trends')  renderTrends();
+  if(t==='trends') renderTrends();
   if(t==='history') renderHistory();
 }
 
-// ── Settings ─────────────────────────────────────────────────────────────────
-function editName() {
-  const n=prompt('輸入貓咪名字：', catName);
-  if(n&&n.trim()){catName=n.trim(); document.getElementById('cat-name').textContent=catName; save();}
+// ── Settings ──────────────────────────────────────────────────────────────────
+function editName(){
+  const n=prompt('輸入貓咪名字：',catName);
+  if(n&&n.trim()){catName=n.trim();document.getElementById('cat-name').textContent=catName;persist();}
 }
-function openSettings() {
-  document.getElementById('api-inp').value=apiKey;
-  document.getElementById('api-inp').type='password';
+function openSettings(){
+  document.getElementById('worker-url-inp').value=workerUrl;
   document.getElementById('modal-settings').style.display='flex';
 }
 function closeSettings(){document.getElementById('modal-settings').style.display='none';}
 function saveSettings(){
-  apiKey=document.getElementById('api-inp').value.trim();
-  save(); closeSettings(); alert('✓ 設定已儲存');
+  const w=document.getElementById('worker-url-inp').value.trim();
+  if(w && !w.startsWith('http')){alert('請輸入完整的 URL（以 https:// 開頭）');return;}
+  workerUrl=w; persist(); closeSettings();
+  alert(workerUrl?'✓ Worker URL 已儲存！':'已清除 Worker URL');
 }
-function toggleVis(){const i=document.getElementById('api-inp');i.type=i.type==='password'?'text':'password';}
 
 // ── Upload ────────────────────────────────────────────────────────────────────
 function onDrop(e){
   e.preventDefault();
-  document.getElementById('dropzone').classList.remove('dragging');
+  document.getElementById('dropzone').classList.remove('drag');
   const f=e.dataTransfer.files[0]; if(f) processFile(f);
 }
-function onFile(e){const f=e.target.files[0]; if(f) processFile(f);}
+function onFile(e){const f=e.target.files[0];if(f) processFile(f);}
 
 function showErr(msg){
   const el=document.getElementById('err-area');
   el.style.display='block';
-  el.innerHTML='<i class="ti ti-alert-circle" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i><strong>分析失敗：</strong>' + msg
-    + '<br><small style="margin-top:6px;display:block;opacity:.8">提示：確認 API 金鑰正確、圖片清晰，或重新整理後再試。</small>';
+  el.innerHTML=`<i class="ti ti-alert-circle" style="font-size:16px;vertical-align:-2px;margin-right:6px" aria-hidden="true"></i><strong>分析失敗：</strong>${msg}`;
 }
 
-async function processFile(file) {
-  if(!apiKey){alert('請先在「設定」中輸入 Anthropic API 金鑰。'); openSettings(); return;}
+async function processFile(file){
+  if(!workerUrl){
+    showErr('請先在「設定」中填入 Cloudflare Worker URL。');
+    openSettings(); return;
+  }
   document.getElementById('upload-area').style.display='none';
   document.getElementById('thinking').style.display='block';
   document.getElementById('result-area').style.display='none';
   document.getElementById('err-area').style.display='none';
 
-  try {
-    const b64 = await new Promise((ok,fail)=>{
+  try{
+    const b64=await new Promise((ok,fail)=>{
       const r=new FileReader();
       r.onload=()=>ok(r.result.split(',')[1]);
       r.onerror=()=>fail(new Error('檔案讀取失敗'));
       r.readAsDataURL(file);
     });
 
-    const isPDF = file.type==='application/pdf';
-    const mediaType = isPDF ? 'application/pdf' : (file.type || 'image/jpeg');
-    const block = isPDF
-      ? {type:'document', source:{type:'base64', media_type:mediaType, data:b64}}
-      : {type:'image',    source:{type:'base64', media_type:mediaType, data:b64}};
+    const isPDF=file.type==='application/pdf';
+    const mt=isPDF?'application/pdf':(file.type||'image/jpeg');
+    const block=isPDF
+      ?{type:'document',source:{type:'base64',media_type:mt,data:b64}}
+      :{type:'image',   source:{type:'base64',media_type:mt,data:b64}};
 
-    const today = new Date().toISOString().slice(0,10);
-    const prompt = `你是獸醫血液報告 OCR 分析助理。請分析這張貓咪血液報告照片，辨識所有數值。
+    const today=new Date().toISOString().slice(0,10);
+    const prompt=`你是獸醫血液報告 OCR 分析助理。分析這張貓咪血液報告照片，辨識所有數值。
 
-規則（嚴格遵守）：
-1. 只回傳純 JSON，不加任何 markdown、說明或前後文字
-2. 數值轉為數字型（浮點或整數），不帶單位
+嚴格規則：
+1. 只回傳純 JSON，不加任何說明、markdown 或前後文字
+2. 數值轉為數字型（浮點或整數）
 3. 找不到的核心欄位填 null
-4. 日期無法辨識則填 ${today}
-5. CRE 和 CREA 是同一項目，統一用 CREA
+4. 日期格式 YYYY-MM-DD，辨識不到則填 ${today}
+5. CRE 和 CREA 統一用 CREA
 
-回傳格式（完整複製此結構，只填值）：
+回傳格式：
 {"date":"YYYY-MM-DD","values":{"RBC":null,"HCT":null,"HGB":null,"MCV":null,"MCH":null,"MCHC":null,"WBC":null,"PLT":null,"BUN":null,"CREA":null,"ALT":null,"PHOS":null,"TP":null,"GLU":null,"SDMA":null},"otherValues":[{"name":"","value":"","unit":"","range":"","status":""}],"summary":""}
 
-summary 要求：2-4句繁體中文，說明整體狀況與所有異常項目（紅字/標高/標低），並給出建議。`;
+summary：2-4句繁體中文，說明整體狀況與所有異常項目（含偏高/偏低方向），給出建議。`;
 
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    const resp=await fetch(workerUrl,{
       method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body: JSON.stringify({
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:2000,
-        messages:[{role:'user', content:[block, {type:'text',text:prompt}]}]
+        messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]
       })
     });
 
-    const json = await resp.json();
-
-    if(!resp.ok || json.error){
-      const m = json.error?.message || `HTTP ${resp.status}`;
-      if(resp.status===401) throw new Error('API 金鑰無效或過期，請至設定重新輸入。');
-      if(resp.status===429) throw new Error('請求太頻繁，請稍後幾秒再試。');
-      throw new Error(m);
+    if(!resp.ok){
+      const t=await resp.text().catch(()=>'');
+      throw new Error(`Worker 回應 HTTP ${resp.status}${t?'：'+t.slice(0,120):''}`);
     }
 
-    const raw = json.content?.map(c=>c.text||'').join('') || '';
+    const json=await resp.json();
+    if(json.error) throw new Error(json.error.message||JSON.stringify(json.error));
+
+    const raw=json.content?.map(c=>c.text||'').join('')||'';
     let parsed;
-    try {
-      // strip any accidental markdown fences
-      const clean = raw.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
-      parsed = JSON.parse(clean);
-    } catch(_) {
-      // try to extract JSON substring
-      const m = raw.match(/\{[\s\S]*\}/);
-      if(m) { try{ parsed=JSON.parse(m[0]); }catch(__){} }
+    try{
+      const clean=raw.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
+      parsed=JSON.parse(clean);
+    }catch(_){
+      const m=raw.match(/\{[\s\S]*\}/);
+      if(m){try{parsed=JSON.parse(m[0]);}catch(__){}}
     }
-
     if(!parsed) throw new Error('AI 回傳格式無法解析，請重新上傳更清晰的圖片。');
 
-    // normalise CRE -> CREA alias
-    if(parsed.values){
-      Object.keys(KEY_ALIAS).forEach(k=>{
-        if(parsed.values[k]!=null && parsed.values[KEY_ALIAS[k]]==null){
-          parsed.values[KEY_ALIAS[k]]=parsed.values[k]; delete parsed.values[k];
-        }
-      });
-    }
+    // alias CRE → CREA
+    if(parsed.values?.CRE!=null&&parsed.values.CREA==null){parsed.values.CREA=parsed.values.CRE;delete parsed.values.CRE;}
 
     showResult(parsed);
-  } catch(e) {
+  }catch(e){
     document.getElementById('thinking').style.display='none';
     document.getElementById('upload-area').style.display='block';
-    showErr(e.message);
+    let msg=e.message;
+    if(msg.includes('Failed to fetch')||msg.includes('NetworkError')||msg.includes('Load failed')){
+      msg='無法連線到 Worker。請確認 Worker URL 正確，且 Worker 已正常部署。';
+    }
+    showErr(msg);
   }
 }
 
-// ── Display Result ────────────────────────────────────────────────────────────
+// ── Result ────────────────────────────────────────────────────────────────────
 function showResult(data){
   document.getElementById('thinking').style.display='none';
   document.getElementById('result-area').style.display='block';
-  document.getElementById('res-date').textContent = data.date||'—';
-  pending = data;
-
-  const tbody = document.getElementById('res-tbody');
+  document.getElementById('res-date').textContent=data.date||'—';
+  pending=data;
+  const tbody=document.getElementById('res-tbody');
   tbody.innerHTML='';
-
-  // core indicators
   Object.entries(IND).forEach(([k,info])=>{
-    const v=data.values?.[k];
-    if(v==null) return;
-    const st=status(k,v);
-    tbody.innerHTML+=`<tr>
-      <td style="font-weight:500">${info.name}</td>
-      <td style="font-size:14px;font-weight:500">${v}</td>
-      <td style="color:var(--tx2)">${info.unit}</td>
-      <td style="color:var(--tx3);font-size:12px">${info.low}–${info.high}</td>
-      <td>${badge(st)}</td></tr>`;
+    const v=data.values?.[k]; if(v==null) return;
+    const st=indStatus(k,v);
+    tbody.innerHTML+=`<tr><td style="font-weight:500">${info.name}</td><td style="font-size:14px;font-weight:500">${v}</td><td style="color:var(--tx2)">${info.unit}</td><td style="color:var(--tx3);font-size:12px">${info.low}–${info.high}</td><td>${badge(st)}</td></tr>`;
   });
-
-  // extra values
   (data.otherValues||[]).forEach(item=>{
     if(!item.name) return;
-    const st2 = item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
-    tbody.innerHTML+=`<tr>
-      <td style="font-weight:500">${item.name}</td>
-      <td style="font-size:14px;font-weight:500">${item.value}</td>
-      <td style="color:var(--tx2)">${item.unit||''}</td>
-      <td style="color:var(--tx3);font-size:12px">${item.range||''}</td>
-      <td>${badge(st2)}</td></tr>`;
+    const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
+    tbody.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-size:14px;font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td style="color:var(--tx3);font-size:12px">${item.range||''}</td><td>${badge(st2)}</td></tr>`;
   });
-
-  document.getElementById('res-summary').textContent = data.summary||'請查看各項數值。';
+  document.getElementById('res-summary').textContent=data.summary||'請查看各項數值。';
 }
 
 function loadDemo(){
-  const d = DEMO[DEMO.length-1];
-  showResult({...d});
-  if(!records.length){ records=JSON.parse(JSON.stringify(DEMO)); save(); }
+  showResult({...DEMO[DEMO.length-1]});
+  if(!records.length){records=JSON.parse(JSON.stringify(DEMO));persist();}
 }
-
 function editDate(){
-  const r=pending; if(!r) return;
-  const d=prompt('輸入日期（YYYY-MM-DD）：', r.date);
-  if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){r.date=d; document.getElementById('res-date').textContent=d;}
+  const r=pending;if(!r)return;
+  const d=prompt('輸入日期（YYYY-MM-DD）：',r.date);
+  if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){r.date=d;document.getElementById('res-date').textContent=d;}
 }
-
 function saveRec(){
-  if(!pending) return;
+  if(!pending)return;
   const idx=records.findIndex(x=>x.date===pending.date);
-  if(idx>=0){if(!confirm('此日期已有紀錄，確定覆蓋？'))return; records[idx]=JSON.parse(JSON.stringify(pending));}
-  else{records.push(JSON.parse(JSON.stringify(pending))); records.sort((a,b)=>a.date.localeCompare(b.date));}
-  save(); resetScan(); alert('✓ 紀錄已儲存！');
+  if(idx>=0){if(!confirm('此日期已有紀錄，確定覆蓋？'))return;records[idx]=JSON.parse(JSON.stringify(pending));}
+  else{records.push(JSON.parse(JSON.stringify(pending)));records.sort((a,b)=>a.date.localeCompare(b.date));}
+  persist();resetScan();alert('✓ 紀錄已儲存！');
 }
-
 function resetScan(){
   document.getElementById('upload-area').style.display='block';
   document.getElementById('result-area').style.display='none';
@@ -525,15 +473,15 @@ function resetScan(){
   pending=null;
 }
 
-// ── Status & Badge ────────────────────────────────────────────────────────────
-function status(k,v){
-  const r=IND[k]; if(!r||v==null) return 'na';
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function indStatus(k,v){
+  const r=IND[k];if(!r||v==null)return'na';
   return v<r.low?'lo':v>r.high?'hi':'ok';
 }
 function badge(st){
   const m={ok:{cls:'ok',icon:'ti-check',lbl:'正常'},hi:{cls:'hi',icon:'ti-arrow-up',lbl:'偏高'},lo:{cls:'lo',icon:'ti-arrow-down',lbl:'偏低'},na:{cls:'na',icon:'ti-minus',lbl:'—'}};
   const c=m[st]||m.na;
-  return `<span class="badge ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i>${c.lbl}</span>`;
+  return`<span class="badge ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i>${c.lbl}</span>`;
 }
 
 // ── Trends ────────────────────────────────────────────────────────────────────
@@ -544,20 +492,15 @@ function renderTrends(){
   let data=records.filter(r=>r.values?.[ind]!=null);
   if(period!=='all') data=data.slice(-parseInt(period));
 
-  if(!data.length){
-    document.getElementById('tr-empty').style.display='block';
-    document.getElementById('tr-content').style.display='none';
-    return;
-  }
-  document.getElementById('tr-empty').style.display='none';
-  document.getElementById('tr-content').style.display='block';
+  if(!data.length){document.getElementById('tr-empty').style.display='block';document.getElementById('tr-content').style.display='none';return;}
+  document.getElementById('tr-empty').style.display='none';document.getElementById('tr-content').style.display='block';
 
   const vals=data.map(r=>r.values[ind]);
   const latest=vals[vals.length-1];
   const prev=vals.length>1?vals[vals.length-2]:null;
   const diff=prev!=null?+(latest-prev).toFixed(2):null;
   const arrow=diff==null?'—':diff>0?'↑':diff<0?'↓':'→';
-  const st=status(ind,latest);
+  const st=indStatus(ind,latest);
 
   document.getElementById('tr-summary').innerHTML=`
     <div class="mcard"><div class="ml">最新數值</div><div class="mv">${latest}</div><div class="ms">${info?info.unit:''}</div></div>
@@ -574,11 +517,11 @@ function renderTrends(){
   if(chart){chart.destroy();chart=null;}
   chart=new Chart(document.getElementById('tChart').getContext('2d'),{
     type:'line',
-    data:{labels, datasets:[
-      {label:info?info.name:ind, data:vals, borderColor:lc, backgroundColor:lc+'18', borderWidth:2.5, pointRadius:5, pointBackgroundColor:lc, fill:true, tension:0.35},
+    data:{labels,datasets:[
+      {label:info?info.name:ind,data:vals,borderColor:lc,backgroundColor:lc+'18',borderWidth:2.5,pointRadius:5,pointBackgroundColor:lc,fill:true,tension:0.35},
       ...(info?[
-        {label:'參考上限', data:data.map(()=>info.high), borderColor:'#E24B4A55', borderWidth:1.5, borderDash:[6,4], pointRadius:0, fill:false},
-        {label:'參考下限', data:data.map(()=>info.low),  borderColor:'#BA751755', borderWidth:1.5, borderDash:[6,4], pointRadius:0, fill:false}
+        {label:'參考上限',data:data.map(()=>info.high),borderColor:'#E24B4A55',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false},
+        {label:'參考下限',data:data.map(()=>info.low), borderColor:'#BA751755',borderWidth:1.5,borderDash:[6,4],pointRadius:0,fill:false}
       ]:[])
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
@@ -587,13 +530,11 @@ function renderTrends(){
     }}
   });
 
-  const ov=document.getElementById('tr-overview');
-  ov.innerHTML='';
+  const ov=document.getElementById('tr-overview');ov.innerHTML='';
   Object.entries(IND).forEach(([k,inf])=>{
-    const recs=records.filter(r=>r.values?.[k]!=null);
-    if(!recs.length) return;
+    const recs=records.filter(r=>r.values?.[k]!=null);if(!recs.length)return;
     const v=recs[recs.length-1].values[k];
-    const st2=status(k,v);
+    const st2=indStatus(k,v);
     const pct=Math.min(100,Math.max(0,((v-inf.low)/(inf.high-inf.low))*100));
     const bc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st2]||'#888';
     ov.innerHTML+=`<div style="margin-bottom:14px">
@@ -609,23 +550,19 @@ function renderTrends(){
 
 // ── History ───────────────────────────────────────────────────────────────────
 function renderHistory(){
-  const empty=document.getElementById('h-empty');
-  const card=document.getElementById('h-card');
-  const list=document.getElementById('h-list');
+  const empty=document.getElementById('h-empty'),card=document.getElementById('h-card'),list=document.getElementById('h-list');
   if(!records.length){empty.style.display='block';card.style.display='none';return;}
   empty.style.display='none';card.style.display='block';
   list.innerHTML=[...records].reverse().map((r,i)=>{
     const ri=records.length-1-i;
-    const ab=Object.entries(r.values||{}).filter(([k,v])=>v!=null&&status(k,v)!=='ok'&&status(k,v)!=='na').length;
+    const ab=Object.entries(r.values||{}).filter(([k,v])=>v!=null&&indStatus(k,v)!=='ok'&&indStatus(k,v)!=='na').length;
     const tot=Object.values(r.values||{}).filter(v=>v!=null).length;
     const dc=ab===0?'dg':ab<=2?'da':'dr';
-    return `<div class="hitem">
+    return`<div class="hitem">
       <div style="display:flex;align-items:center;gap:12px">
         <span class="sdot ${dc}"></span>
-        <div>
-          <div style="font-weight:500;font-size:14px">${r.date}</div>
-          <div style="font-size:12px;color:var(--tx2)">${tot} 項數值 · ${ab?ab+' 項異常':'全部正常'}</div>
-        </div>
+        <div><div style="font-weight:500;font-size:14px">${r.date}</div>
+        <div style="font-size:12px;color:var(--tx2)">${tot} 項數值 · ${ab?ab+' 項異常':'全部正常'}</div></div>
       </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-sm" onclick="viewRec(${ri})" title="查看"><i class="ti ti-eye" aria-hidden="true"></i></button>
@@ -634,48 +571,40 @@ function renderHistory(){
     </div>`;
   }).join('');
 }
-
 function viewRec(idx){
-  const r=records[idx]; if(!r) return;
+  const r=records[idx];if(!r)return;
   document.getElementById('vm-title').textContent=r.date+' 血液報告';
-  const b=document.getElementById('vm-body');
-  b.innerHTML='';
+  const b=document.getElementById('vm-body');b.innerHTML='';
   Object.entries(IND).forEach(([k,info])=>{
-    const v=r.values?.[k]; if(v==null) return;
-    b.innerHTML+=`<tr><td style="font-weight:500">${info.name}</td><td style="font-weight:500">${v}</td><td style="color:var(--tx2)">${info.unit}</td><td>${badge(status(k,v))}</td></tr>`;
+    const v=r.values?.[k];if(v==null)return;
+    b.innerHTML+=`<tr><td style="font-weight:500">${info.name}</td><td style="font-weight:500">${v}</td><td style="color:var(--tx2)">${info.unit}</td><td>${badge(indStatus(k,v))}</td></tr>`;
   });
   (r.otherValues||[]).forEach(item=>{
-    if(!item.name) return;
+    if(!item.name)return;
     const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
     b.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td>${badge(st2)}</td></tr>`;
   });
   document.getElementById('vm-summary').textContent=r.summary||'';
   document.getElementById('modal-view').style.display='flex';
 }
-
 function delRec(idx){
   if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
-  records.splice(idx,1); save(); renderHistory();
+  records.splice(idx,1);persist();renderHistory();
 }
-
-// ── Import / Export ───────────────────────────────────────────────────────────
 function exportJSON(){
   const blob=new Blob([JSON.stringify({catName,records},null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=catName+'_血液紀錄.json';
-  a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=catName+'_血液紀錄.json';a.click();
 }
 function importJSON(e){
-  const file=e.target.files[0]; if(!file) return;
+  const file=e.target.files[0];if(!file)return;
   const rd=new FileReader();
   rd.onload=ev=>{
     try{
       const d=JSON.parse(ev.target.result);
       if(d.records&&confirm('確定匯入 '+d.records.length+' 筆紀錄？（會覆蓋現有資料）')){
         records=d.records;
-        if(d.catName){catName=d.catName; document.getElementById('cat-name').textContent=catName;}
-        save(); renderHistory(); alert('✓ 匯入成功！');
+        if(d.catName){catName=d.catName;document.getElementById('cat-name').textContent=catName;}
+        persist();renderHistory();alert('✓ 匯入成功！');
       }
     }catch(err){alert('匯入失敗：'+err.message);}
     e.target.value='';
@@ -683,7 +612,6 @@ function importJSON(e){
   rd.readAsText(file);
 }
 
-// ── Init ──────────────────────────────────────────────────────────────────────
 load();
 </script>
 </body>
