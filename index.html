@@ -124,9 +124,44 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 
 <!-- Tabs -->
 <div class="tabs">
-  <button class="tab active" onclick="goTab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span></button>
-  <button class="tab" onclick="goTab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span></button>
-  <button class="tab" onclick="goTab('history')" id="tab-history"><i class="ti ti-history" aria-hidden="true"></i><span>歷史紀錄</span></button>
+  <button class="tab active" onclick="goTab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描</span></button>
+  <button class="tab" onclick="goTab('overview')" id="tab-overview"><i class="ti ti-heart-rate-monitor" aria-hidden="true"></i><span>健康總覽</span></button>
+  <button class="tab" onclick="goTab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢</span></button>
+  <button class="tab" onclick="goTab('history')" id="tab-history"><i class="ti ti-history" aria-hidden="true"></i><span>紀錄</span></button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="panel-overview" class="panel">
+  <div id="ov-empty" class="empty" style="display:none">
+    <i class="ti ti-heart-rate-monitor" aria-hidden="true"></i>尚無資料<br>
+    <button class="btn btn-sm" style="margin-top:12px" onclick="goTab('scan')">去掃描第一份報告</button>
+  </div>
+  <div id="ov-content" style="display:none">
+    <!-- AI 綜合摘要 -->
+    <div class="card" id="ov-ai-card" style="display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <i class="ti ti-brain" style="color:var(--ac);font-size:18px" aria-hidden="true"></i>
+          <span style="font-weight:500;font-size:14px">AI 綜合健康分析</span>
+        </div>
+        <button class="btn btn-sm" onclick="runOverviewAI()" id="ov-ai-btn">
+          <i class="ti ti-refresh" aria-hidden="true"></i> 重新分析
+        </button>
+      </div>
+      <div id="ov-ai-thinking" style="display:none">
+        <div class="thinking"><div class="dots"><span></span><span></span><span></span></div><span>AI 正在分析整體趨勢…</span></div>
+      </div>
+      <p id="ov-ai-text" style="font-size:13px;color:var(--tx2);line-height:1.8"></p>
+    </div>
+    <!-- 異常項目 -->
+    <div id="ov-abnormal-section" style="display:none">
+      <p class="slabel">⚠️ 需要注意的項目</p>
+      <div class="card" style="padding:0.75rem 1.25rem"><div id="ov-abnormal"></div></div>
+    </div>
+    <!-- 所有指標總覽 -->
+    <p class="slabel">所有指標目前狀態</p>
+    <div id="ov-groups"></div>
+  </div>
 </div>
 
 <!-- SCAN -->
@@ -560,12 +595,13 @@ async function syncToDrive(){
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 function goTab(t){
-  ['scan','trends','history'].forEach(id=>{
+  ['scan','overview','trends','history'].forEach(id=>{
     document.getElementById('tab-'+id).classList.toggle('active',id===t);
     document.getElementById('panel-'+id).classList.toggle('active',id===t);
   });
-  if(t==='trends') renderTrends();
-  if(t==='history') renderHistory();
+  if(t==='overview') renderOverview();
+  if(t==='trends')   renderTrends();
+  if(t==='history')  renderHistory();
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────
@@ -716,6 +752,166 @@ function badge(st){
   const m={ok:{cls:'ok',icon:'ti-check',lbl:'正常'},hi:{cls:'hi',icon:'ti-arrow-up',lbl:'偏高'},lo:{cls:'lo',icon:'ti-arrow-down',lbl:'偏低'},na:{cls:'na',icon:'ti-minus',lbl:'—'}};
   const c=m[st]||m.na;
   return`<span class="badge ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i>${c.lbl}</span>`;
+}
+
+// ── Overview ──────────────────────────────────────────────────────────────────
+const IND_GROUPS = [
+  { label:'紅血球', keys:['RBC','HCT','HGB','MCV','MCH','MCHC','RDW'] },
+  { label:'白血球', keys:['WBC','NEU','LYM','MONO','EOS','BASO'] },
+  { label:'血小板', keys:['PLT','MPV','PCT'] },
+  { label:'腎臟功能', keys:['BUN','CREA','SDMA','PHOS'] },
+  { label:'肝臟功能', keys:['ALT','AST','ALP','TBIL','LIPA'] },
+  { label:'其他生化', keys:['TP','ALB','GLOB','GLU','CA'] },
+];
+
+function renderOverview(){
+  if(!records.length){
+    document.getElementById('ov-empty').style.display='block';
+    document.getElementById('ov-content').style.display='none';
+    return;
+  }
+  document.getElementById('ov-empty').style.display='none';
+  document.getElementById('ov-content').style.display='block';
+
+  const latest=records[records.length-1];
+  const prev=records.length>1?records[records.length-2]:null;
+
+  // 收集所有異常項目
+  const abnormals=[];
+  Object.entries(IND).forEach(([k,info])=>{
+    const recs=records.filter(r=>r.values?.[k]!=null);
+    if(!recs.length) return;
+    const cur=recs[recs.length-1].values[k];
+    const st=indStatus(k,cur);
+    if(st==='hi'||st==='lo'){
+      const prevRecs=recs.slice(0,-1);
+      const prevVal=prevRecs.length?prevRecs[prevRecs.length-1].values[k]:null;
+      const trend=prevVal==null?'—':cur>prevVal?'↑':cur<prevVal?'↓':'→';
+      const worsening=(st==='hi'&&trend==='↑')||(st==='lo'&&trend==='↓');
+      abnormals.push({k,info,cur,st,trend,worsening});
+    }
+  });
+
+  // 異常項目區塊
+  const abSec=document.getElementById('ov-abnormal-section');
+  const abDiv=document.getElementById('ov-abnormal');
+  if(abnormals.length){
+    abSec.style.display='block';
+    abDiv.innerHTML=abnormals.sort((a,b)=>b.worsening-a.worsening).map(({k,info,cur,st,trend,worsening})=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:0.5px solid var(--bd)">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${worsening?'<i class="ti ti-alert-triangle" style="color:#E24B4A;font-size:15px"></i>':'<i class="ti ti-minus" style="color:var(--tx3);font-size:15px"></i>'}
+          <div>
+            <div style="font-size:13px;font-weight:500">${info.name}</div>
+            <div style="font-size:11px;color:var(--tx3)">參考：${info.low}–${info.high} ${info.unit}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;text-align:right">
+          <span style="font-size:15px;font-weight:500">${cur} <span style="font-size:12px;color:var(--tx3)">${info.unit}</span></span>
+          <span style="font-size:16px;color:${trend==='↑'?'#E24B4A':trend==='↓'?'#BA7517':'var(--tx3)'}">${trend}</span>
+          ${badge(st)}
+        </div>
+      </div>`).join('');
+    // 移除最後一個 border
+    abDiv.querySelector('div:last-child')?.style.setProperty('border-bottom','none');
+  }else{
+    abSec.style.display='none';
+  }
+
+  // 分組顯示所有指標
+  const groups=document.getElementById('ov-groups');
+  groups.innerHTML='';
+  IND_GROUPS.forEach(grp=>{
+    const rows=grp.keys.map(k=>{
+      const info=IND[k];
+      if(!info) return '';
+      const recs=records.filter(r=>r.values?.[k]!=null);
+      if(!recs.length) return '';
+      const cur=recs[recs.length-1].values[k];
+      const prevVal=recs.length>1?recs[recs.length-2].values[k]:null;
+      const diff=prevVal!=null?+(cur-prevVal).toFixed(2):null;
+      const trend=diff==null?'—':diff>0?'↑':diff<0?'↓':'→';
+      const st=indStatus(k,cur);
+      const tColor=trend==='↑'?(st==='hi'?'#E24B4A':'#639922'):trend==='↓'?(st==='lo'?'#E24B4A':'#639922'):'var(--tx3)';
+      const pct=Math.min(100,Math.max(0,((cur-info.low)/(info.high-info.low))*100));
+      const bc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st]||'#888';
+      return`<div style="padding:10px 0;border-bottom:0.5px solid var(--bd)">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:13px;font-weight:500">${info.name}</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px;font-weight:500">${cur} <span style="font-size:11px;color:var(--tx3)">${info.unit}</span></span>
+            <span style="font-size:14px;color:${tColor};font-weight:500">${trend}</span>
+            ${badge(st)}
+          </div>
+        </div>
+        <div class="pbar" style="margin-top:6px"><div class="pfill" style="width:${pct}%;background:${bc}"></div></div>
+        ${diff!=null?`<div style="font-size:10px;color:var(--tx3);margin-top:2px">與上次相差 ${diff>0?'+':''}${diff} · 範圍 ${info.low}–${info.high}</div>`:''}
+      </div>`;
+    }).filter(Boolean).join('');
+    if(!rows) return;
+    groups.innerHTML+=`
+      <p class="slabel">${grp.label}</p>
+      <div class="card" style="padding:0.5rem 1.25rem">${rows}</div>`;
+  });
+
+  // 顯示 AI 分析按鈕
+  document.getElementById('ov-ai-card').style.display='block';
+  if(!document.getElementById('ov-ai-text').textContent){
+    runOverviewAI();
+  }
+}
+
+async function runOverviewAI(){
+  if(!workerUrl){
+    document.getElementById('ov-ai-text').textContent='請先在設定中填入 Worker URL 才能使用 AI 分析。';
+    return;
+  }
+  document.getElementById('ov-ai-thinking').style.display='block';
+  document.getElementById('ov-ai-text').textContent='';
+  document.getElementById('ov-ai-btn').disabled=true;
+
+  try{
+    // 整理最近三筆紀錄給 AI
+    const recent=records.slice(-3).map(r=>{
+      const vals=Object.entries(r.values||{})
+        .filter(([k,v])=>v!=null&&IND[k])
+        .map(([k,v])=>{
+          const info=IND[k];
+          const st=indStatus(k,v);
+          return `${info.name}: ${v} ${info.unit}（${st==='hi'?'偏高':st==='lo'?'偏低':'正常'}，範圍${info.low}-${info.high}）`;
+        }).join('、');
+      return `${r.date}：${vals}`;
+    }).join('\n');
+
+    const prompt=`以下是一隻貓咪最近的血液檢查數值（最多三次），請以獸醫的角度，用繁體中文給出3-5句的整體健康評估：
+1. 目前最需要關注的異常項目
+2. 各項指標的整體趨勢（改善/惡化/穩定）
+3. 給飼主的具體建議
+
+血液數值資料：
+${recent}
+
+請直接給出評估，不要列點，用自然的段落文字，語氣要親切但專業。`;
+
+    const resp=await fetch(workerUrl,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:600,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    const json=await resp.json();
+    if(json.error) throw new Error(json.error.message);
+    const text=json.content?.map(c=>c.text||'').join('')||'';
+    document.getElementById('ov-ai-text').textContent=text;
+  }catch(e){
+    document.getElementById('ov-ai-text').textContent='分析失敗：'+e.message;
+  }finally{
+    document.getElementById('ov-ai-thinking').style.display='none';
+    document.getElementById('ov-ai-btn').disabled=false;
+  }
 }
 
 // ── Trends ────────────────────────────────────────────────────────────────────
