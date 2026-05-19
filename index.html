@@ -188,13 +188,13 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   <div class="frow">
     <select id="tr-ind" onchange="renderTrends()">
       <option value="RBC">RBC（紅血球）</option><option value="HCT">HCT（血容比）</option>
-      <option value="HGB">HGB（血紅素）</option><option value="MCV">MCV</option>
-      <option value="MCH">MCH</option><option value="MCHC">MCHC</option>
+      <option value="HGB">HGB（血紅素）</option><option value="MCV">MCV（平均紅血球容積）</option>
+      <option value="MCH">MCH（平均血紅素量）</option><option value="MCHC">MCHC（平均血紅素濃度）</option>
       <option value="WBC">WBC（白血球）</option><option value="PLT">PLT（血小板）</option>
       <option value="BUN">BUN（尿素氮）</option><option value="CREA">CREA（肌酸酐）</option>
       <option value="ALT">ALT（肝臟酵素）</option><option value="PHOS">PHOS（磷）</option>
       <option value="TP">TP（總蛋白）</option><option value="GLU">GLU（血糖）</option>
-      <option value="SDMA">SDMA</option>
+      <option value="SDMA">SDMA（對稱二甲基精胺酸）</option>
     </select>
     <select id="tr-period" onchange="renderTrends()">
       <option value="all">全部紀錄</option><option value="6">近 6 筆</option><option value="3">近 3 筆</option>
@@ -266,6 +266,23 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 </div>
 
 <!-- Google Sign-In script (loads after user sets Client ID) -->
+<!-- Edit Record Modal -->
+<div id="modal-edit" class="modal-ov" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal" style="max-width:560px">
+    <h3><i class="ti ti-pencil" aria-hidden="true"></i> 編輯紀錄</h3>
+    <label class="field-label">檢驗日期</label>
+    <input type="text" id="edit-date" placeholder="YYYY-MM-DD">
+    <p class="slabel" style="margin-top:1rem">血液數值</p>
+    <div id="edit-values-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem"></div>
+    <label class="field-label">AI 摘要</label>
+    <textarea id="edit-summary" style="width:100%;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--rm);font-size:13px;color:var(--tx);background:var(--bg);font-family:var(--font);resize:vertical;min-height:80px"></textarea>
+    <div class="mfoot">
+      <button class="btn" onclick="document.getElementById('modal-edit').style.display='none'">取消</button>
+      <button class="btn btn-primary" onclick="saveEditRec()"><i class="ti ti-check" aria-hidden="true"></i> 儲存變更</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ── Indicators ────────────────────────────────────────────────────────────────
 const IND = {
@@ -717,6 +734,7 @@ function renderHistory(){
       </div>
       <div style="display:flex;gap:6px">
         <button class="btn btn-sm" onclick="viewRec(${ri})" title="查看"><i class="ti ti-eye" aria-hidden="true"></i></button>
+        <button class="btn btn-sm" onclick="editRec(${ri})" title="編輯"><i class="ti ti-pencil" aria-hidden="true"></i></button>
         <button class="btn btn-sm btn-danger" onclick="delRec(${ri})" title="刪除"><i class="ti ti-trash" aria-hidden="true"></i></button>
       </div>
     </div>`;
@@ -739,7 +757,50 @@ function viewRec(idx){
   document.getElementById('vm-summary').textContent=r.summary||'';
   document.getElementById('modal-view').style.display='flex';
 }
-async function delRec(idx){
+let editingIdx = null;
+function editRec(idx){
+  const r=records[idx]; if(!r) return;
+  editingIdx=idx;
+  document.getElementById('edit-date').value=r.date||'';
+  document.getElementById('edit-summary').value=r.summary||'';
+  const grid=document.getElementById('edit-values-grid');
+  grid.innerHTML='';
+  Object.entries(IND).forEach(([k,info])=>{
+    const v=r.values?.[k];
+    grid.innerHTML+=`<div>
+      <div style="font-size:11px;color:var(--tx2);margin-bottom:3px">${info.name}</div>
+      <input type="number" step="any" id="edit-val-${k}" value="${v!=null?v:''}" placeholder="—"
+        style="width:100%;padding:6px 8px;border:0.5px solid var(--bd2);border-radius:var(--rm);font-size:13px;color:var(--tx);background:var(--bg);font-family:var(--font)">
+    </div>`;
+  });
+  document.getElementById('modal-edit').style.display='flex';
+}
+async function saveEditRec(){
+  if(editingIdx===null) return;
+  const r=JSON.parse(JSON.stringify(records[editingIdx]));
+  const newDate=document.getElementById('edit-date').value.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate)){alert('日期格式錯誤，請用 YYYY-MM-DD');return;}
+  // check date conflict
+  if(newDate!==r.date && records.some((x,i)=>x.date===newDate&&i!==editingIdx)){
+    if(!confirm('此日期已有紀錄，確定覆蓋？'))return;
+    const conflictIdx=records.findIndex((x,i)=>x.date===newDate&&i!==editingIdx);
+    records.splice(conflictIdx,1);
+    editingIdx=records.findIndex(x=>x.date===r.date);
+  }
+  r.date=newDate;
+  r.summary=document.getElementById('edit-summary').value.trim();
+  Object.keys(IND).forEach(k=>{
+    const val=document.getElementById('edit-val-'+k)?.value;
+    r.values[k]=(val===''||val==null)?null:parseFloat(val);
+  });
+  records[editingIdx]=r;
+  records.sort((a,b)=>a.date.localeCompare(b.date));
+  saveLocal();
+  document.getElementById('modal-edit').style.display='none';
+  renderHistory();
+  if(accessToken) await syncToDrive();
+  alert('✓ 紀錄已更新！');
+}
   if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
   records.splice(idx,1);saveLocal();renderHistory();
   if(accessToken) await syncToDrive();
