@@ -24,10 +24,13 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:100vh;padding:1.5rem 1rem}
 .wrap{max-width:780px;margin:0 auto}
-.hdr{display:flex;align-items:center;gap:14px;margin-bottom:1.75rem}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:1rem}
 .hdr-icon{width:48px;height:48px;border-radius:var(--rl);background:var(--acbg);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ac);flex-shrink:0}
 .hdr-title{font-size:20px;font-weight:500}
 .hdr-sub{font-size:13px;color:var(--tx2);margin-top:2px}
+.sync-bar{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--rm);margin-bottom:1.25rem;font-size:13px;border:0.5px solid var(--bd);background:var(--bg)}
+.sync-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-green{background:#639922}.dot-amber{background:#BA7517}.dot-gray{background:var(--tx3)}
 .tabs{display:flex;background:var(--bg2);border-radius:var(--rm);padding:4px;margin-bottom:1.25rem}
 .tab{flex:1;padding:8px 10px;font-size:13px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:none;border-radius:calc(var(--rm) - 2px);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font)}
 .tab.active{background:var(--bg);color:var(--tx);box-shadow:0 0 0 0.5px var(--bd)}
@@ -37,6 +40,7 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:10
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--tx);font-family:var(--font)}
 .btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
 .btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}.btn-primary:hover{opacity:.88}
+.btn-google{background:#4285F4;color:#fff;border-color:#4285F4}.btn-google:hover{opacity:.88}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-danger{color:#E24B4A}
 .upload-zone{border:1.5px dashed var(--bd2);border-radius:var(--rl);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
@@ -51,7 +55,6 @@ body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:10
 @keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 .err-box{display:none;border-radius:var(--rm);padding:14px 16px;font-size:13px;line-height:1.6;margin:1rem 0;background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595}
 @media(prefers-color-scheme:dark){.err-box{background:#501313;color:#F7C1C1;border-color:#791F1F}}
-.info-box{background:var(--acbg);color:var(--ac);border-radius:var(--rm);padding:12px 16px;font-size:13px;line-height:1.6;margin-bottom:1rem;border:0.5px solid var(--ac)}
 table{width:100%;border-collapse:collapse}
 th{text-align:left;font-weight:500;color:var(--tx2);font-size:12px;padding:6px 6px 8px 0;border-bottom:0.5px solid var(--bd);letter-spacing:.02em}
 td{padding:8px 6px 8px 0;border-bottom:0.5px solid var(--bd);font-size:13px;vertical-align:middle}
@@ -88,8 +91,8 @@ input[type=text],input[type=password],input[type=url]{width:100%;padding:8px 10p
 input:focus{outline:none;box-shadow:0 0 0 2px var(--ac)40}
 .api-row{display:flex;gap:8px;align-items:center}
 .api-row input{flex:1}
-.step{display:flex;gap:10px;margin-bottom:12px;font-size:13px;line-height:1.6}
-.step-num{width:22px;height:22px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:1px}
+.step{display:flex;gap:10px;margin-bottom:10px;font-size:13px;line-height:1.6}
+.step-num{width:20px;height:20px;border-radius:50%;background:var(--ac);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0;margin-top:2px}
 footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding-bottom:1rem}
 @media(max-width:500px){th:nth-child(4),td:nth-child(4){display:none}.tab span{display:none}}
 </style>
@@ -97,6 +100,7 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 <body>
 <div class="wrap">
 
+<!-- Header -->
 <div class="hdr">
   <div class="hdr-icon"><i class="ti ti-paw" aria-hidden="true"></i></div>
   <div>
@@ -109,6 +113,16 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   </div>
 </div>
 
+<!-- Sync status bar -->
+<div class="sync-bar" id="sync-bar">
+  <span class="sync-dot dot-gray" id="sync-dot"></span>
+  <span id="sync-msg" style="flex:1;color:var(--tx2)">尚未連結 Google Drive</span>
+  <button class="btn btn-sm btn-google" id="sync-btn" onclick="handleGoogleAuth()">
+    <i class="ti ti-brand-google" aria-hidden="true"></i> 連結 Google Drive
+  </button>
+</div>
+
+<!-- Tabs -->
 <div class="tabs">
   <button class="tab active" onclick="goTab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span></button>
   <button class="tab" onclick="goTab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span></button>
@@ -133,16 +147,13 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
       <button class="btn btn-sm" onclick="loadDemo()"><i class="ti ti-sparkles" aria-hidden="true"></i> 載入範例</button>
     </div>
   </div>
-
   <div id="thinking" style="display:none">
     <div class="thinking">
       <div class="dots"><span></span><span></span><span></span></div>
       <span>AI 正在分析血液報告，識別數值中⋯⋯</span>
     </div>
   </div>
-
   <div id="err-area" class="err-box"></div>
-
   <div id="result-area" style="display:none">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
       <span style="font-size:13px;color:var(--tx2)">已識別的數值</span>
@@ -204,7 +215,7 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 <!-- HISTORY -->
 <div id="panel-history" class="panel">
   <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;gap:8px">
-    <button class="btn btn-sm" onclick="exportJSON()"><i class="ti ti-download" aria-hidden="true"></i> 匯出</button>
+    <button class="btn btn-sm" onclick="exportJSON()"><i class="ti ti-download" aria-hidden="true"></i> 匯出備份</button>
     <button class="btn btn-sm" onclick="document.getElementById('iinput').click()"><i class="ti ti-upload" aria-hidden="true"></i> 匯入</button>
     <input type="file" id="iinput" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
@@ -215,7 +226,7 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   <div class="card" id="h-card" style="display:none;padding:.75rem 1.25rem"><div id="h-list"></div></div>
 </div>
 
-<footer>貓咪血液追蹤系統 · 資料僅存於本機瀏覽器 · 僅供參考，請以獸醫診斷為準</footer>
+<footer>貓咪血液追蹤系統 · 資料同步至 Google Drive · 僅供參考，請以獸醫診斷為準</footer>
 </div>
 
 <!-- Settings Modal -->
@@ -223,19 +234,18 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   <div class="modal">
     <h3><i class="ti ti-settings" aria-hidden="true"></i> 設定</h3>
 
-    <div style="background:var(--bg2);border-radius:var(--rm);padding:14px;margin-bottom:16px">
-      <div style="font-size:13px;font-weight:500;margin-bottom:10px">如何設定（一次，免費）</div>
-      <div class="step"><div class="step-num">1</div><div>前往 <a href="https://dash.cloudflare.com" target="_blank" style="color:var(--ac)">dash.cloudflare.com</a> 免費註冊 → Workers &amp; Pages → Create Worker</div></div>
-      <div class="step"><div class="step-num">2</div><div>貼上 <code style="background:var(--bd);padding:1px 5px;border-radius:4px">worker.js</code>（和此 HTML 同資料夾）的程式碼並儲存</div></div>
-      <div class="step"><div class="step-num">3</div><div>Worker → Settings → Variables → 新增 Secret：<code style="background:var(--bd);padding:1px 5px;border-radius:4px">ANTHROPIC_API_KEY</code> = 你的 API 金鑰</div></div>
-      <div class="step"><div class="step-num">4</div><div>複製 Worker URL（格式：<code style="background:var(--bd);padding:1px 5px;border-radius:4px">https://xxx.workers.dev</code>）貼到下方</div></div>
+    <div style="background:var(--bg2);border-radius:var(--rm);padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px">Cloudflare Worker URL（AI 分析用）</div>
+      <input type="url" id="worker-url-inp" placeholder="https://cat-blood-proxy.eva6014.workers.dev">
+      <div style="font-size:12px;color:var(--tx3);margin-top:6px">用來呼叫 Claude AI 識別血液報告數值</div>
     </div>
 
-    <label class="field-label">Cloudflare Worker URL</label>
-    <input type="url" id="worker-url-inp" placeholder="https://你的名稱.workers.dev">
-
-    <div style="margin-top:12px;font-size:12px;color:var(--tx3)">
-      API 金鑰存放在 Cloudflare Worker 的環境變數中，不會出現在瀏覽器裡，更安全。
+    <div style="background:var(--bg2);border-radius:var(--rm);padding:14px;margin-bottom:14px">
+      <div style="font-size:13px;font-weight:500;margin-bottom:10px">Google OAuth Client ID（雲端同步用）</div>
+      <input type="text" id="gclient-inp" placeholder="xxxxxxxx.apps.googleusercontent.com">
+      <div style="font-size:12px;color:var(--tx3);margin-top:6px">
+        前往 <a href="https://console.cloud.google.com" target="_blank" style="color:var(--ac)">Google Cloud Console</a> 取得
+      </div>
     </div>
 
     <div class="mfoot">
@@ -255,6 +265,7 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   </div>
 </div>
 
+<!-- Google Sign-In script (loads after user sets Client ID) -->
 <script>
 // ── Indicators ────────────────────────────────────────────────────────────────
 const IND = {
@@ -275,32 +286,151 @@ const IND = {
   SDMA: {name:'SDMA',                   unit:'μg/dL', low:0,    high:14   },
 };
 
-// ── Demo ──────────────────────────────────────────────────────────────────────
 const DEMO = [
-  {date:'2024-03-10',values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2},otherValues:[],summary:'各項數值均在正常範圍內，整體狀況良好。建議維持目前飲食，按時回診。'},
-  {date:'2024-09-18',values:{RBC:7.0,HCT:36,HGB:11.5,WBC:9.1,PLT:260,BUN:24,CREA:1.6,ALT:82,PHOS:4.8},otherValues:[],summary:'BUN 與 CREA 略有上升，ALT 偏高需追蹤，建議增加飲水並縮短回診間隔。'},
-  {date:'2025-01-10',values:{RBC:6.6,HCT:34,HGB:10.8,WBC:10.3,PLT:240,BUN:30,CREA:2.1,ALT:180,PHOS:5.5},otherValues:[],summary:'CREA 接近上限，ALT 明顯偏高，建議與獸醫討論治療方案。'},
+  {date:'2024-03-10',values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2},otherValues:[],summary:'各項數值均在正常範圍內，整體狀況良好。'},
+  {date:'2024-09-18',values:{RBC:7.0,HCT:36,HGB:11.5,WBC:9.1,PLT:260,BUN:24,CREA:1.6,ALT:82,PHOS:4.8},otherValues:[],summary:'BUN 與 CREA 略有上升，ALT 偏高需追蹤。'},
+  {date:'2025-01-10',values:{RBC:6.6,HCT:34,HGB:10.8,WBC:10.3,PLT:240,BUN:30,CREA:2.1,ALT:180,PHOS:5.5},otherValues:[],summary:'CREA 接近上限，ALT 明顯偏高，建議與獸醫討論。'},
   {date:'2026-05-09',values:{RBC:5.5,HCT:27.4,HGB:10.2,MCH:18.5,MCHC:37.2,WBC:8.22,PLT:226,BUN:32,CREA:2.7,ALT:427,PHOS:5.9},
-   otherValues:[{name:'MCV',value:'49.8',unit:'fL',range:'35.9-53.1',status:'正常'},{name:'NEU',value:'5.53',unit:'K/μL',range:'2.30-10.29',status:'正常'},{name:'LYM',value:'1.69',unit:'K/μL',range:'0.92-6.88',status:'正常'}],
-   summary:'⚠️ CREA 2.7 偏高（腎臟功能下降）、ALT 427 嚴重偏高（肝臟問題）、MCH 偏高、HCT 27.4 偏低（輕度貧血）。建議立即與獸醫討論治療方案。'},
+   otherValues:[{name:'MCV',value:'49.8',unit:'fL',range:'35.9-53.1',status:'正常'},{name:'NEU',value:'5.53',unit:'K/μL',range:'2.30-10.29',status:'正常'}],
+   summary:'⚠️ CREA 2.7 偏高、ALT 427 嚴重偏高、HCT 27.4 偏低。建議立即與獸醫討論治療方案。'},
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let records=[], catName='我的貓咪', workerUrl='', chart=null, pending=null;
+let records=[], catName='我的貓咪', workerUrl='', gClientId='', accessToken='', driveFileId='', chart=null, pending=null;
 
-function load(){
+const DRIVE_FILENAME = () => catName + '_血液紀錄.json';
+
+function loadLocal(){
   try{
     const r=localStorage.getItem('cbr'); if(r) records=JSON.parse(r);
-    const n=localStorage.getItem('cbn'); if(n){catName=n;document.getElementById('cat-name').textContent=n;}
+    const n=localStorage.getItem('cbn'); if(n){catName=n; document.getElementById('cat-name').textContent=n;}
     const w=localStorage.getItem('cbw'); if(w) workerUrl=w;
+    const g=localStorage.getItem('cbg'); if(g) gClientId=g;
+    const fid=localStorage.getItem('cbfid'); if(fid) driveFileId=fid;
   }catch(e){}
 }
-function persist(){
+function saveLocal(){
   try{
     localStorage.setItem('cbr',JSON.stringify(records));
     localStorage.setItem('cbn',catName);
     if(workerUrl) localStorage.setItem('cbw',workerUrl);
+    if(gClientId) localStorage.setItem('cbg',gClientId);
+    if(driveFileId) localStorage.setItem('cbfid',driveFileId);
   }catch(e){}
+}
+
+// ── Google Drive Sync ─────────────────────────────────────────────────────────
+function setSyncStatus(state, msg){
+  const dot=document.getElementById('sync-dot');
+  const txt=document.getElementById('sync-msg');
+  const btn=document.getElementById('sync-btn');
+  dot.className='sync-dot '+(state==='ok'?'dot-green':state==='busy'?'dot-amber':'dot-gray');
+  txt.textContent=msg;
+  if(state==='ok'){
+    btn.innerHTML='<i class="ti ti-refresh" aria-hidden="true"></i> 立即同步';
+    btn.onclick=syncToDrive;
+    btn.className='btn btn-sm';
+  }else if(state==='busy'){
+    btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> 同步中…';
+    btn.disabled=true;
+  }else{
+    btn.innerHTML='<i class="ti ti-brand-google" aria-hidden="true"></i> 連結 Google Drive';
+    btn.onclick=handleGoogleAuth;
+    btn.className='btn btn-sm btn-google';
+    btn.disabled=false;
+  }
+}
+
+function handleGoogleAuth(){
+  if(!gClientId){
+    alert('請先在「設定」中填入 Google OAuth Client ID。');
+    openSettings(); return;
+  }
+  const scope='https://www.googleapis.com/auth/drive.file';
+  const redirectUri=location.href.split('?')[0].split('#')[0];
+  const authUrl=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(gClientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=token&scope=${encodeURIComponent(scope)}&prompt=consent`;
+  window.location.href=authUrl;
+}
+
+function parseHashToken(){
+  const hash=location.hash.slice(1);
+  if(!hash) return;
+  const params=Object.fromEntries(hash.split('&').map(p=>p.split('=')));
+  if(params.access_token){
+    accessToken=params.access_token;
+    history.replaceState(null,'',location.pathname);
+    setSyncStatus('busy','正在從 Google Drive 讀取資料…');
+    loadFromDrive();
+  }
+}
+
+async function findDriveFile(){
+  const name=DRIVE_FILENAME();
+  const res=await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${name}' and trashed=false&fields=files(id,name)`,{
+    headers:{Authorization:'Bearer '+accessToken}
+  });
+  const data=await res.json();
+  if(data.files&&data.files.length>0){driveFileId=data.files[0].id;saveLocal();return true;}
+  return false;
+}
+
+async function loadFromDrive(){
+  try{
+    const found=await findDriveFile();
+    if(!found){
+      setSyncStatus('ok','已連結 Google Drive（尚無雲端資料，將於儲存時建立）');
+      return;
+    }
+    const res=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{
+      headers:{Authorization:'Bearer '+accessToken}
+    });
+    const data=await res.json();
+    if(data.records){
+      records=data.records;
+      if(data.catName){catName=data.catName;document.getElementById('cat-name').textContent=catName;}
+      saveLocal();
+    }
+    setSyncStatus('ok','已同步 Google Drive · '+records.length+' 筆紀錄');
+  }catch(e){
+    setSyncStatus('error','同步失敗：'+e.message);
+  }
+}
+
+async function syncToDrive(){
+  if(!accessToken){setSyncStatus('none','尚未連結 Google Drive');return;}
+  setSyncStatus('busy','正在同步到 Google Drive…');
+  try{
+    const body=JSON.stringify({catName,records},null,2);
+    const blob=new Blob([body],{type:'application/json'});
+    let res;
+    if(driveFileId){
+      res=await fetch(`https://www.googleapis.com/upload/drive/v3/files/${driveFileId}?uploadType=media`,{
+        method:'PATCH',
+        headers:{Authorization:'Bearer '+accessToken,'Content-Type':'application/json'},
+        body:blob
+      });
+    }else{
+      const meta=JSON.stringify({name:DRIVE_FILENAME()});
+      const form=new FormData();
+      form.append('metadata',new Blob([meta],{type:'application/json'}));
+      form.append('file',blob);
+      res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',{
+        method:'POST',
+        headers:{Authorization:'Bearer '+accessToken},
+        body:form
+      });
+      const d=await res.json();
+      if(d.id){driveFileId=d.id;saveLocal();}
+    }
+    if(res.ok){
+      const now=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
+      setSyncStatus('ok','已同步 · '+now+' · '+records.length+' 筆紀錄');
+    }else{
+      throw new Error('HTTP '+res.status);
+    }
+  }catch(e){
+    setSyncStatus('ok','同步失敗（'+e.message+'），資料已存本機');
+  }
 }
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -316,18 +446,20 @@ function goTab(t){
 // ── Settings ──────────────────────────────────────────────────────────────────
 function editName(){
   const n=prompt('輸入貓咪名字：',catName);
-  if(n&&n.trim()){catName=n.trim();document.getElementById('cat-name').textContent=catName;persist();}
+  if(n&&n.trim()){catName=n.trim();document.getElementById('cat-name').textContent=catName;saveLocal();}
 }
 function openSettings(){
   document.getElementById('worker-url-inp').value=workerUrl;
+  document.getElementById('gclient-inp').value=gClientId;
   document.getElementById('modal-settings').style.display='flex';
 }
 function closeSettings(){document.getElementById('modal-settings').style.display='none';}
 function saveSettings(){
   const w=document.getElementById('worker-url-inp').value.trim();
-  if(w && !w.startsWith('http')){alert('請輸入完整的 URL（以 https:// 開頭）');return;}
-  workerUrl=w; persist(); closeSettings();
-  alert(workerUrl?'✓ Worker URL 已儲存！':'已清除 Worker URL');
+  const g=document.getElementById('gclient-inp').value.trim();
+  if(w&&!w.startsWith('http')){alert('Worker URL 請以 https:// 開頭');return;}
+  workerUrl=w; gClientId=g; saveLocal(); closeSettings();
+  alert('✓ 設定已儲存！');
 }
 
 // ── Upload ────────────────────────────────────────────────────────────────────
@@ -345,15 +477,11 @@ function showErr(msg){
 }
 
 async function processFile(file){
-  if(!workerUrl){
-    showErr('請先在「設定」中填入 Cloudflare Worker URL。');
-    openSettings(); return;
-  }
+  if(!workerUrl){showErr('請先在「設定」中填入 Cloudflare Worker URL。');openSettings();return;}
   document.getElementById('upload-area').style.display='none';
   document.getElementById('thinking').style.display='block';
   document.getElementById('result-area').style.display='none';
   document.getElementById('err-area').style.display='none';
-
   try{
     const b64=await new Promise((ok,fail)=>{
       const r=new FileReader();
@@ -361,13 +489,11 @@ async function processFile(file){
       r.onerror=()=>fail(new Error('檔案讀取失敗'));
       r.readAsDataURL(file);
     });
-
     const isPDF=file.type==='application/pdf';
     const mt=isPDF?'application/pdf':(file.type||'image/jpeg');
     const block=isPDF
       ?{type:'document',source:{type:'base64',media_type:mt,data:b64}}
       :{type:'image',   source:{type:'base64',media_type:mt,data:b64}};
-
     const today=new Date().toISOString().slice(0,10);
     const prompt=`你是獸醫血液報告 OCR 分析助理。分析這張貓咪血液報告照片，辨識所有數值。
 
@@ -381,40 +507,21 @@ async function processFile(file){
 回傳格式：
 {"date":"YYYY-MM-DD","values":{"RBC":null,"HCT":null,"HGB":null,"MCV":null,"MCH":null,"MCHC":null,"WBC":null,"PLT":null,"BUN":null,"CREA":null,"ALT":null,"PHOS":null,"TP":null,"GLU":null,"SDMA":null},"otherValues":[{"name":"","value":"","unit":"","range":"","status":""}],"summary":""}
 
-summary：2-4句繁體中文，說明整體狀況與所有異常項目（含偏高/偏低方向），給出建議。`;
-
+summary：2-4句繁體中文，說明整體狀況與所有異常項目（含偏高/偏低），給出建議。`;
     const resp=await fetch(workerUrl,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:2000,
-        messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]
-      })
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:2000,messages:[{role:'user',content:[block,{type:'text',text:prompt}]}]})
     });
-
-    if(!resp.ok){
-      const t=await resp.text().catch(()=>'');
-      throw new Error(`Worker 回應 HTTP ${resp.status}${t?'：'+t.slice(0,120):''}`);
-    }
-
+    if(!resp.ok){const t=await resp.text().catch(()=>'');throw new Error(`Worker 回應 HTTP ${resp.status}${t?'：'+t.slice(0,120):''}`);}
     const json=await resp.json();
     if(json.error) throw new Error(json.error.message||JSON.stringify(json.error));
-
     const raw=json.content?.map(c=>c.text||'').join('')||'';
     let parsed;
-    try{
-      const clean=raw.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
-      parsed=JSON.parse(clean);
-    }catch(_){
-      const m=raw.match(/\{[\s\S]*\}/);
-      if(m){try{parsed=JSON.parse(m[0]);}catch(__){}}
-    }
+    try{const clean=raw.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();parsed=JSON.parse(clean);}
+    catch(_){const m=raw.match(/\{[\s\S]*\}/);if(m){try{parsed=JSON.parse(m[0]);}catch(__){}}  }
     if(!parsed) throw new Error('AI 回傳格式無法解析，請重新上傳更清晰的圖片。');
-
-    // alias CRE → CREA
     if(parsed.values?.CRE!=null&&parsed.values.CREA==null){parsed.values.CREA=parsed.values.CRE;delete parsed.values.CRE;}
-
     showResult(parsed);
   }catch(e){
     document.getElementById('thinking').style.display='none';
@@ -433,36 +540,38 @@ function showResult(data){
   document.getElementById('result-area').style.display='block';
   document.getElementById('res-date').textContent=data.date||'—';
   pending=data;
-  const tbody=document.getElementById('res-tbody');
-  tbody.innerHTML='';
+  const tbody=document.getElementById('res-tbody');tbody.innerHTML='';
   Object.entries(IND).forEach(([k,info])=>{
-    const v=data.values?.[k]; if(v==null) return;
+    const v=data.values?.[k];if(v==null)return;
     const st=indStatus(k,v);
     tbody.innerHTML+=`<tr><td style="font-weight:500">${info.name}</td><td style="font-size:14px;font-weight:500">${v}</td><td style="color:var(--tx2)">${info.unit}</td><td style="color:var(--tx3);font-size:12px">${info.low}–${info.high}</td><td>${badge(st)}</td></tr>`;
   });
   (data.otherValues||[]).forEach(item=>{
-    if(!item.name) return;
+    if(!item.name)return;
     const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
     tbody.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-size:14px;font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td style="color:var(--tx3);font-size:12px">${item.range||''}</td><td>${badge(st2)}</td></tr>`;
   });
-  document.getElementById('res-summary').textContent=data.summary||'請查看各項數值。';
+  document.getElementById('res-summary').textContent=data.summary||'';
 }
 
 function loadDemo(){
   showResult({...DEMO[DEMO.length-1]});
-  if(!records.length){records=JSON.parse(JSON.stringify(DEMO));persist();}
+  if(!records.length){records=JSON.parse(JSON.stringify(DEMO));saveLocal();}
 }
 function editDate(){
   const r=pending;if(!r)return;
   const d=prompt('輸入日期（YYYY-MM-DD）：',r.date);
   if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){r.date=d;document.getElementById('res-date').textContent=d;}
 }
-function saveRec(){
+async function saveRec(){
   if(!pending)return;
   const idx=records.findIndex(x=>x.date===pending.date);
   if(idx>=0){if(!confirm('此日期已有紀錄，確定覆蓋？'))return;records[idx]=JSON.parse(JSON.stringify(pending));}
   else{records.push(JSON.parse(JSON.stringify(pending)));records.sort((a,b)=>a.date.localeCompare(b.date));}
-  persist();resetScan();alert('✓ 紀錄已儲存！');
+  saveLocal();
+  resetScan();
+  alert('✓ 紀錄已儲存！共 '+records.length+' 筆');
+  if(accessToken) await syncToDrive();
 }
 function resetScan(){
   document.getElementById('upload-area').style.display='block';
@@ -474,10 +583,7 @@ function resetScan(){
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function indStatus(k,v){
-  const r=IND[k];if(!r||v==null)return'na';
-  return v<r.low?'lo':v>r.high?'hi':'ok';
-}
+function indStatus(k,v){const r=IND[k];if(!r||v==null)return'na';return v<r.low?'lo':v>r.high?'hi':'ok';}
 function badge(st){
   const m={ok:{cls:'ok',icon:'ti-check',lbl:'正常'},hi:{cls:'hi',icon:'ti-arrow-up',lbl:'偏高'},lo:{cls:'lo',icon:'ti-arrow-down',lbl:'偏低'},na:{cls:'na',icon:'ti-minus',lbl:'—'}};
   const c=m[st]||m.na;
@@ -491,29 +597,24 @@ function renderTrends(){
   const info=IND[ind];
   let data=records.filter(r=>r.values?.[ind]!=null);
   if(period!=='all') data=data.slice(-parseInt(period));
-
   if(!data.length){document.getElementById('tr-empty').style.display='block';document.getElementById('tr-content').style.display='none';return;}
   document.getElementById('tr-empty').style.display='none';document.getElementById('tr-content').style.display='block';
-
   const vals=data.map(r=>r.values[ind]);
   const latest=vals[vals.length-1];
   const prev=vals.length>1?vals[vals.length-2]:null;
   const diff=prev!=null?+(latest-prev).toFixed(2):null;
   const arrow=diff==null?'—':diff>0?'↑':diff<0?'↓':'→';
   const st=indStatus(ind,latest);
-
   document.getElementById('tr-summary').innerHTML=`
     <div class="mcard"><div class="ml">最新數值</div><div class="mv">${latest}</div><div class="ms">${info?info.unit:''}</div></div>
     <div class="mcard"><div class="ml">參考範圍</div><div class="mv" style="font-size:16px">${info?info.low+'–'+info.high:'—'}</div></div>
     <div class="mcard"><div class="ml">與上次差異</div><div class="mv" style="font-size:20px">${arrow}</div><div class="ms">${diff!=null?(diff>0?'+':'')+diff:'—'}</div></div>
     <div class="mcard"><div class="ml">狀態</div><div class="mv" style="font-size:15px;margin-top:6px">${badge(st)}</div></div>`;
-
   const labels=data.map(r=>r.date.slice(5));
   const lc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st]||'#888';
   const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
   const gc=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.07)';
   const tc=isDark?'#6b6b67':'#9a9a96';
-
   if(chart){chart.destroy();chart=null;}
   chart=new Chart(document.getElementById('tChart').getContext('2d'),{
     type:'line',
@@ -529,7 +630,6 @@ function renderTrends(){
       x:{grid:{display:false},ticks:{color:tc,font:{size:12},autoSkip:false,maxRotation:45}}
     }}
   });
-
   const ov=document.getElementById('tr-overview');ov.innerHTML='';
   Object.entries(IND).forEach(([k,inf])=>{
     const recs=records.filter(r=>r.values?.[k]!=null);if(!recs.length)return;
@@ -587,24 +687,28 @@ function viewRec(idx){
   document.getElementById('vm-summary').textContent=r.summary||'';
   document.getElementById('modal-view').style.display='flex';
 }
-function delRec(idx){
+async function delRec(idx){
   if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
-  records.splice(idx,1);persist();renderHistory();
+  records.splice(idx,1);saveLocal();renderHistory();
+  if(accessToken) await syncToDrive();
 }
 function exportJSON(){
   const blob=new Blob([JSON.stringify({catName,records},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=catName+'_血液紀錄.json';a.click();
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=catName+'_血液紀錄_'+new Date().toISOString().slice(0,10)+'.json';a.click();
 }
 function importJSON(e){
   const file=e.target.files[0];if(!file)return;
   const rd=new FileReader();
-  rd.onload=ev=>{
+  rd.onload=async ev=>{
     try{
       const d=JSON.parse(ev.target.result);
       if(d.records&&confirm('確定匯入 '+d.records.length+' 筆紀錄？（會覆蓋現有資料）')){
         records=d.records;
         if(d.catName){catName=d.catName;document.getElementById('cat-name').textContent=catName;}
-        persist();renderHistory();alert('✓ 匯入成功！');
+        saveLocal();renderHistory();
+        if(accessToken) await syncToDrive();
+        alert('✓ 匯入成功！');
       }
     }catch(err){alert('匯入失敗：'+err.message);}
     e.target.value='';
@@ -612,7 +716,10 @@ function importJSON(e){
   rd.readAsText(file);
 }
 
-load();
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadLocal();
+parseHashToken();
+if(!accessToken) setSyncStatus('none','尚未連結 Google Drive');
 </script>
 </body>
 </html>
