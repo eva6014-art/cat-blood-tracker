@@ -187,14 +187,48 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
 <div id="panel-trends" class="panel">
   <div class="frow">
     <select id="tr-ind" onchange="renderTrends()">
-      <option value="RBC">RBC（紅血球）</option><option value="HCT">HCT（血容比）</option>
-      <option value="HGB">HGB（血紅素）</option><option value="MCV">MCV（平均紅血球容積）</option>
-      <option value="MCH">MCH（平均血紅素量）</option><option value="MCHC">MCHC（平均血紅素濃度）</option>
-      <option value="WBC">WBC（白血球）</option><option value="PLT">PLT（血小板）</option>
-      <option value="BUN">BUN（尿素氮）</option><option value="CREA">CREA（肌酸酐）</option>
-      <option value="ALT">ALT（肝臟酵素）</option><option value="PHOS">PHOS（磷）</option>
-      <option value="TP">TP（總蛋白）</option><option value="GLU">GLU（血糖）</option>
-      <option value="SDMA">SDMA（對稱二甲基精胺酸）</option>
+      <optgroup label="紅血球">
+        <option value="RBC">RBC（紅血球）</option>
+        <option value="HCT">HCT（血容比）</option>
+        <option value="HGB">HGB（血紅素）</option>
+        <option value="MCV">MCV（平均紅血球容積）</option>
+        <option value="MCH">MCH（平均血紅素量）</option>
+        <option value="MCHC">MCHC（平均血紅素濃度）</option>
+        <option value="RDW">RDW（紅血球分布寬度）</option>
+      </optgroup>
+      <optgroup label="白血球">
+        <option value="WBC">WBC（白血球）</option>
+        <option value="NEU">NEU（嗜中性球）</option>
+        <option value="LYM">LYM（淋巴球）</option>
+        <option value="MONO">MONO（單核球）</option>
+        <option value="EOS">EOS（嗜酸性球）</option>
+        <option value="BASO">BASO（嗜鹼性球）</option>
+      </optgroup>
+      <optgroup label="血小板">
+        <option value="PLT">PLT（血小板）</option>
+        <option value="MPV">MPV（平均血小板容積）</option>
+        <option value="PCT">PCT（血小板壓積）</option>
+      </optgroup>
+      <optgroup label="腎臟">
+        <option value="BUN">BUN（尿素氮）</option>
+        <option value="CREA">CREA（肌酸酐）</option>
+        <option value="SDMA">SDMA</option>
+        <option value="PHOS">PHOS（磷）</option>
+      </optgroup>
+      <optgroup label="肝臟">
+        <option value="ALT">ALT（肝臟酵素）</option>
+        <option value="AST">AST（天門冬酸轉胺酶）</option>
+        <option value="ALP">ALP（鹼性磷酸酶）</option>
+        <option value="TBIL">TBIL（總膽紅素）</option>
+        <option value="LIPA">LIPA（脂肪酶）</option>
+      </optgroup>
+      <optgroup label="其他生化">
+        <option value="TP">TP（總蛋白）</option>
+        <option value="ALB">ALB（白蛋白）</option>
+        <option value="GLOB">GLOB（球蛋白）</option>
+        <option value="GLU">GLU（血糖）</option>
+        <option value="CA">CA（鈣）</option>
+      </optgroup>
     </select>
     <select id="tr-period" onchange="renderTrends()">
       <option value="all">全部紀錄</option><option value="6">近 6 筆</option><option value="3">近 3 筆</option>
@@ -310,6 +344,23 @@ const IND = {
   TP:   {name:'TP（總蛋白）',           unit:'g/dL',  low:5.4,  high:8.2  },
   GLU:  {name:'GLU（血糖）',            unit:'mg/dL', low:70,   high:150  },
   SDMA: {name:'SDMA（對稱二甲基精胺酸）',unit:'μg/dL',low:0,   high:14   },
+  // 白血球分類（絕對值）
+  NEU:  {name:'NEU（嗜中性球）',        unit:'K/μL',  low:2.30, high:10.29},
+  LYM:  {name:'LYM（淋巴球）',          unit:'K/μL',  low:0.92, high:6.88 },
+  MONO: {name:'MONO（單核球）',          unit:'K/μL',  low:0.05, high:0.67 },
+  EOS:  {name:'EOS（嗜酸性球）',        unit:'K/μL',  low:0.17, high:1.57 },
+  BASO: {name:'BASO（嗜鹼性球）',       unit:'K/μL',  low:0.01, high:0.26 },
+  // 血小板延伸
+  MPV:  {name:'MPV（平均血小板容積）',  unit:'fL',    low:11.4, high:21.6 },
+  PCT:  {name:'PCT（血小板壓積）',      unit:'%',     low:0.17, high:0.86 },
+  // 生化延伸
+  ALB:  {name:'ALB（白蛋白）',          unit:'g/dL',  low:2.5,  high:3.9  },
+  GLOB: {name:'GLOB（球蛋白）',         unit:'g/dL',  low:2.8,  high:5.1  },
+  AST:  {name:'AST（天門冬酸轉胺酶）', unit:'U/L',   low:0,    high:48   },
+  ALP:  {name:'ALP（鹼性磷酸酶）',     unit:'U/L',   low:10,   high:90   },
+  TBIL: {name:'TBIL（總膽紅素）',       unit:'mg/dL', low:0,    high:0.4  },
+  CA:   {name:'CA（鈣）',               unit:'mg/dL', low:8.2,  high:11.8 },
+  LIPA: {name:'LIPA（脂肪酶）',         unit:'U/L',   low:0,    high:205  },
 };
 
 // 其他項目的中文對照（用於 otherValues 顯示）
@@ -488,6 +539,12 @@ async function syncToDrive(){
       });
       const d=await res.json();
       if(d.id){driveFileId=d.id;saveLocal();}
+    }
+    if(res.status===401){
+      // token 過期，清除並提示重新登入
+      accessToken='';
+      setSyncStatus('none','Google 授權已過期，請重新連結');
+      return;
     }
     if(res.ok){
       const now=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
@@ -681,11 +738,21 @@ function renderTrends(){
     <div class="mcard"><div class="ml">參考範圍</div><div class="mv" style="font-size:16px">${info?info.low+'–'+info.high:'—'}</div></div>
     <div class="mcard"><div class="ml">與上次差異</div><div class="mv" style="font-size:20px">${arrow}</div><div class="ms">${diff!=null?(diff>0?'+':'')+diff:'—'}</div></div>
     <div class="mcard"><div class="ml">狀態</div><div class="mv" style="font-size:15px;margin-top:6px">${badge(st)}</div></div>`;
-  const labels=data.map(r=>r.date.slice(5));
+  // 日期標籤：超過12筆自動加年份，否則只顯示月日
+  const labels=data.map((r,i)=>{
+    const prev=data[i-1];
+    const yr=r.date.slice(0,4);
+    const md=r.date.slice(5);
+    // 第一筆、年份跨年時顯示年份
+    const showYear=!prev||prev.date.slice(0,4)!==yr;
+    return showYear?yr+'/'+md:md;
+  });
   const lc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st]||'#888';
   const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
   const gc=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.07)';
   const tc=isDark?'#6b6b67':'#9a9a96';
+  // 超過16筆自動跳過部分標籤避免重疊
+  const autoSkip=data.length>16;
   if(chart){chart.destroy();chart=null;}
   chart=new Chart(document.getElementById('tChart').getContext('2d'),{
     type:'line',
@@ -698,7 +765,7 @@ function renderTrends(){
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
       y:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
-      x:{grid:{display:false},ticks:{color:tc,font:{size:12},autoSkip:false,maxRotation:45}}
+      x:{grid:{display:false},ticks:{color:tc,font:{size:11},autoSkip,maxRotation:50,minRotation:30}}
     }}
   });
   const ov=document.getElementById('tr-overview');ov.innerHTML='';
@@ -724,8 +791,10 @@ function renderHistory(){
   const empty=document.getElementById('h-empty'),card=document.getElementById('h-card'),list=document.getElementById('h-list');
   if(!records.length){empty.style.display='block';card.style.display='none';return;}
   empty.style.display='none';card.style.display='block';
-  list.innerHTML=[...records].reverse().map((r,i)=>{
-    const ri=records.length-1-i;
+  // 最新在前（records 本身是舊到新排列）
+  const sorted=[...records.keys()].sort((a,b)=>records[b].date.localeCompare(records[a].date)||(records[b].id||'').localeCompare(records[a].id||''));
+  list.innerHTML=sorted.map(ri=>{
+    const r=records[ri];
     const ab=Object.entries(r.values||{}).filter(([k,v])=>v!=null&&indStatus(k,v)!=='ok'&&indStatus(k,v)!=='na').length;
     const tot=Object.values(r.values||{}).filter(v=>v!=null).length;
     const dc=ab===0?'dg':ab<=2?'da':'dr';
