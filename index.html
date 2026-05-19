@@ -271,6 +271,8 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
     <h3><i class="ti ti-pencil" aria-hidden="true"></i> 編輯紀錄</h3>
     <label class="field-label">檢驗日期</label>
     <input type="text" id="edit-date" placeholder="YYYY-MM-DD">
+    <label class="field-label">報告名稱（選填，例如：血球計數、生化檢查）</label>
+    <input type="text" id="edit-label" placeholder="留空則不顯示">
     <p class="slabel" style="margin-top:1rem">血液數值</p>
     <div id="edit-values-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem"></div>
     <label class="field-label">AI 摘要</label>
@@ -632,9 +634,11 @@ function editDate(){
 }
 async function saveRec(){
   if(!pending)return;
-  const idx=records.findIndex(x=>x.date===pending.date);
-  if(idx>=0){if(!confirm('此日期已有紀錄，確定覆蓋？'))return;records[idx]=JSON.parse(JSON.stringify(pending));}
-  else{records.push(JSON.parse(JSON.stringify(pending)));records.sort((a,b)=>a.date.localeCompare(b.date));}
+  // 每筆紀錄給唯一 id，同一天可以有多筆
+  const rec=JSON.parse(JSON.stringify(pending));
+  if(!rec.id) rec.id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  records.push(rec);
+  records.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   saveLocal();
   resetScan();
   alert('✓ 紀錄已儲存！共 '+records.length+' 筆');
@@ -728,7 +732,7 @@ function renderHistory(){
     return`<div class="hitem">
       <div style="display:flex;align-items:center;gap:12px">
         <span class="sdot ${dc}"></span>
-        <div><div style="font-weight:500;font-size:14px">${r.date}</div>
+        <div><div style="font-weight:500;font-size:14px">${r.date}${r.label?' · '+r.label:''}</div>
         <div style="font-size:12px;color:var(--tx2)">${tot} 項數值 · ${ab?ab+' 項異常':'全部正常'}</div></div>
       </div>
       <div style="display:flex;gap:6px">
@@ -766,6 +770,7 @@ function editRec(idx){
   const r=records[idx]; if(!r) return;
   editingIdx=idx;
   document.getElementById('edit-date').value=r.date||'';
+  document.getElementById('edit-label').value=r.label||'';
   document.getElementById('edit-summary').value=r.summary||'';
   const grid=document.getElementById('edit-values-grid');
   grid.innerHTML='';
@@ -784,21 +789,16 @@ async function saveEditRec(){
   const r=JSON.parse(JSON.stringify(records[editingIdx]));
   const newDate=document.getElementById('edit-date').value.trim();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(newDate)){alert('日期格式錯誤，請用 YYYY-MM-DD');return;}
-  // check date conflict
-  if(newDate!==r.date && records.some((x,i)=>x.date===newDate&&i!==editingIdx)){
-    if(!confirm('此日期已有紀錄，確定覆蓋？'))return;
-    const conflictIdx=records.findIndex((x,i)=>x.date===newDate&&i!==editingIdx);
-    records.splice(conflictIdx,1);
-    editingIdx=records.findIndex(x=>x.date===r.date);
-  }
+  const label=document.getElementById('edit-label').value.trim();
   r.date=newDate;
+  r.label=label||'';
   r.summary=document.getElementById('edit-summary').value.trim();
   Object.keys(IND).forEach(k=>{
     const val=document.getElementById('edit-val-'+k)?.value;
     r.values[k]=(val===''||val==null)?null:parseFloat(val);
   });
   records[editingIdx]=r;
-  records.sort((a,b)=>a.date.localeCompare(b.date));
+  records.sort((a,b)=>a.date.localeCompare(b.date)||(a.id||'').localeCompare(b.id||''));
   saveLocal();
   document.getElementById('modal-edit').style.display='none';
   renderHistory();
