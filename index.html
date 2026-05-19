@@ -734,6 +734,7 @@ async function saveRec(){
   records.sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   saveLocal();
   resetScan();
+  try{ localStorage.removeItem('cbai'); }catch(e){} // 清除 AI 分析快取，下次進總覽自動重新分析
   alert('✓ 紀錄已儲存！共 '+records.length+' 筆');
   if(accessToken) await syncToDrive();
 }
@@ -856,7 +857,21 @@ function renderOverview(){
 
   // 顯示 AI 分析按鈕
   document.getElementById('ov-ai-card').style.display='block';
-  if(!document.getElementById('ov-ai-text').textContent){
+
+  // 讀取快取的分析結果
+  try{
+    const cached=JSON.parse(localStorage.getItem('cbai')||'null');
+    const curKey=records.length+'_'+records[records.length-1]?.date;
+    if(cached&&cached.key===curKey&&cached.text){
+      // 有快取且紀錄沒有變動，直接顯示
+      document.getElementById('ov-ai-text').textContent=cached.text;
+      document.getElementById('ov-ai-btn').textContent='';
+      document.getElementById('ov-ai-btn').innerHTML='<i class="ti ti-refresh" aria-hidden="true"></i> 重新分析';
+    }else{
+      // 無快取或有新紀錄，自動分析一次
+      runOverviewAI();
+    }
+  }catch(e){
     runOverviewAI();
   }
 }
@@ -871,7 +886,6 @@ async function runOverviewAI(){
   document.getElementById('ov-ai-btn').disabled=true;
 
   try{
-    // 整理最近三筆紀錄給 AI
     const recent=records.slice(-3).map(r=>{
       const vals=Object.entries(r.values||{})
         .filter(([k,v])=>v!=null&&IND[k])
@@ -906,6 +920,11 @@ ${recent}
     if(json.error) throw new Error(json.error.message);
     const text=json.content?.map(c=>c.text||'').join('')||'';
     document.getElementById('ov-ai-text').textContent=text;
+
+    // 存入快取，key = 筆數_最新日期
+    const cacheKey=records.length+'_'+records[records.length-1]?.date;
+    try{ localStorage.setItem('cbai',JSON.stringify({key:cacheKey,text,ts:Date.now()})); }catch(e){}
+
   }catch(e){
     document.getElementById('ov-ai-text').textContent='分析失敗：'+e.message;
   }finally{
