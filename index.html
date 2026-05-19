@@ -265,7 +265,6 @@ footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding
   </div>
 </div>
 
-<!-- Google Sign-In script (loads after user sets Client ID) -->
 <!-- Edit Record Modal -->
 <div id="modal-edit" class="modal-ov" style="display:none" onclick="if(event.target===this)this.style.display='none'">
   <div class="modal" style="max-width:560px">
@@ -757,7 +756,12 @@ function viewRec(idx){
   document.getElementById('vm-summary').textContent=r.summary||'';
   document.getElementById('modal-view').style.display='flex';
 }
-let editingIdx = null;
+async function delRec(idx){
+  if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
+  records.splice(idx,1);saveLocal();renderHistory();
+  if(accessToken) await syncToDrive();
+}
+let editingIdx=null;
 function editRec(idx){
   const r=records[idx]; if(!r) return;
   editingIdx=idx;
@@ -800,10 +804,6 @@ async function saveEditRec(){
   renderHistory();
   if(accessToken) await syncToDrive();
   alert('✓ 紀錄已更新！');
-}
-  if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
-  records.splice(idx,1);saveLocal();renderHistory();
-  if(accessToken) await syncToDrive();
 }
 function exportJSON(){
   const blob=new Blob([JSON.stringify({catName,records},null,2)],{type:'application/json'});
