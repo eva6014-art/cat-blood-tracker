@@ -401,15 +401,19 @@
   <div id="panel-trends" class="panel">
     <div class="filter-row">
       <select id="trend-indicator" onchange="renderTrends()">
+        <option value="RBC">RBC（紅血球）</option>
+        <option value="HCT">HCT（血容比）</option>
+        <option value="HGB">HGB（血紅素）</option>
+        <option value="MCV">MCV</option>
+        <option value="MCH">MCH</option>
+        <option value="MCHC">MCHC</option>
+        <option value="WBC">WBC（白血球）</option>
+        <option value="PLT">PLT（血小板）</option>
         <option value="BUN">BUN（尿素氮）</option>
         <option value="CRE">CRE（肌酸酐）</option>
         <option value="ALT">ALT（肝臟酵素）</option>
         <option value="TP">TP（總蛋白）</option>
         <option value="GLU">GLU（血糖）</option>
-        <option value="WBC">WBC（白血球）</option>
-        <option value="RBC">RBC（紅血球）</option>
-        <option value="HCT">HCT（血容比）</option>
-        <option value="PLT">PLT（血小板）</option>
         <option value="SDMA">SDMA</option>
       </select>
       <select id="trend-period" onchange="renderTrends()">
@@ -499,16 +503,20 @@
 
 <script>
 const INDICATORS = {
-  BUN:  { name:'BUN（尿素氮）',  unit:'mg/dL',     low:14,   high:36   },
-  CRE:  { name:'CRE（肌酸酐）',  unit:'mg/dL',     low:0.8,  high:2.4  },
-  ALT:  { name:'ALT（肝臟酵素）',unit:'U/L',       low:10,   high:100  },
-  TP:   { name:'TP（總蛋白）',   unit:'g/dL',      low:5.4,  high:8.2  },
-  GLU:  { name:'GLU（血糖）',    unit:'mg/dL',     low:70,   high:150  },
-  WBC:  { name:'WBC（白血球）',  unit:'×10³/μL',  low:5.5,  high:19.5 },
-  RBC:  { name:'RBC（紅血球）',  unit:'×10⁶/μL', low:5.0,  high:10.0 },
-  HCT:  { name:'HCT（血容比）',  unit:'%',         low:30,   high:45   },
-  PLT:  { name:'PLT（血小板）',  unit:'×10³/μL',  low:200,  high:500  },
-  SDMA: { name:'SDMA',           unit:'μg/dL',     low:0,    high:14   }
+  RBC:  { name:'RBC（紅血球）',   unit:'M/μL',      low:6.54, high:12.20 },
+  HCT:  { name:'HCT（血容比）',   unit:'%',          low:30.3, high:52.3  },
+  HGB:  { name:'HGB（血紅素）',   unit:'g/dL',       low:9.8,  high:16.2  },
+  MCV:  { name:'MCV（平均紅血球容積）', unit:'fL',   low:35.9, high:53.1  },
+  MCH:  { name:'MCH（平均血紅素量）',  unit:'pg',    low:11.8, high:17.3  },
+  MCHC: { name:'MCHC（平均血紅素濃度）',unit:'g/dL',low:28.1, high:35.8  },
+  WBC:  { name:'WBC（白血球）',   unit:'K/μL',      low:2.87, high:17.02 },
+  PLT:  { name:'PLT（血小板）',   unit:'K/μL',      low:151,  high:600   },
+  BUN:  { name:'BUN（尿素氮）',   unit:'mg/dL',      low:14,   high:36    },
+  CRE:  { name:'CRE（肌酸酐）',   unit:'mg/dL',      low:0.8,  high:2.4   },
+  ALT:  { name:'ALT（肝臟酵素）', unit:'U/L',        low:10,   high:100   },
+  TP:   { name:'TP（總蛋白）',    unit:'g/dL',       low:5.4,  high:8.2   },
+  GLU:  { name:'GLU（血糖）',     unit:'mg/dL',      low:70,   high:150   },
+  SDMA: { name:'SDMA',            unit:'μg/dL',      low:0,    high:14    }
 };
 
 const DEMO_RECORDS = [
@@ -610,34 +618,30 @@ async function processReport(file) {
       ? { type:'document', source:{ type:'base64', media_type:'application/pdf', data:base64Data } }
       : { type:'image',    source:{ type:'base64', media_type:file.type,          data:base64Data } };
 
-    const prompt = `你是一位獸醫血液報告分析助理。請仔細分析這份貓咪血液報告，找出所有血液數值。
+    const prompt = `你是一位獸醫血液報告 OCR 分析助理。這是一張用手機拍攝的貓咪血液檢驗報告照片，可能有角度傾斜、光線不均等問題，請盡力辨識所有數值。
 
-請以純 JSON 格式回傳（不要有任何 markdown backtick 或其他文字），格式如下：
-{
-  "date": "YYYY-MM-DD",
-  "values": {
-    "BUN": 數字或null,
-    "CRE": 數字或null,
-    "ALT": 數字或null,
-    "TP": 數字或null,
-    "GLU": 數字或null,
-    "WBC": 數字或null,
-    "RBC": 數字或null,
-    "HCT": 數字或null,
-    "PLT": 數字或null,
-    "SDMA": 數字或null
-  },
-  "otherValues": [
-    {"name": "項目名稱", "value": "數值", "unit": "單位", "range": "參考範圍"}
-  ],
-  "summary": "2-4句中文摘要，說明整體狀況、異常項目，以及建議注意事項"
-}
+重要規則：
+- 回傳純 JSON，絕對不能有 markdown backtick、說明文字或其他任何非 JSON 內容
+- 數值一律轉為數字（浮點數或整數），不要帶單位
+- 找不到的欄位填 null
+- 日期格式 YYYY-MM-DD，若報告上沒有則填今日 ${new Date().toISOString().slice(0,10)}
 
-如果找不到某個值請填 null。日期若報告上沒有請填今日日期。數值請盡量轉換為數字型態。`;
+請回傳以下格式：
+{"date":"YYYY-MM-DD","values":{"BUN":null,"CRE":null,"ALT":null,"TP":null,"GLU":null,"WBC":null,"RBC":null,"HCT":null,"PLT":null,"SDMA":null,"HGB":null,"MCV":null,"MCH":null,"MCHC":null},"otherValues":[{"name":"項目名稱","value":"數值字串","unit":"單位","range":"參考範圍","status":"正常/偏高/偏低"}],"summary":"2-4句中文摘要：整體狀況、異常項目（標明偏高或偏低）、建議注意事項"}
+
+說明：
+- values 裡放最常見的核心指標（數字型）
+- otherValues 放報告上其他所有項目（包含百分比類如 %NEU、%LYM 等，value 用字串）
+- 如果看到標記為「高」或「低」或紅色標示的項目，在 summary 中特別說明`;
 
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json', 'x-api-key': apiKey, 'anthropic-version':'2023-06-01' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1500,
@@ -646,7 +650,13 @@ async function processReport(file) {
     });
 
     const data = await res.json();
-    if(data.error) throw new Error(data.error.message);
+    if(data.error) {
+      const msg = data.error.message || JSON.stringify(data.error);
+      if(res.status === 401) throw new Error('API 金鑰無效，請至設定重新輸入。');
+      if(res.status === 429) throw new Error('請求太頻繁，請稍後再試。');
+      if(res.status === 400) throw new Error('請求格式錯誤：' + msg);
+      throw new Error(msg);
+    }
 
     const text = data.content?.map(i => i.text || '').join('') || '';
     let parsed;
