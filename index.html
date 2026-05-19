@@ -7,477 +7,255 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  :root {
-    --bg: #ffffff;
-    --bg-secondary: #f5f5f3;
-    --bg-tertiary: #eeede8;
-    --text: #1a1a18;
-    --text-secondary: #6b6b67;
-    --text-tertiary: #9a9a96;
-    --border: rgba(0,0,0,0.12);
-    --border-md: rgba(0,0,0,0.22);
-    --radius-md: 8px;
-    --radius-lg: 12px;
-    --radius-xl: 16px;
-    --accent: #534AB7;
-    --accent-bg: #EEEDFE;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', sans-serif;
+:root {
+  --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeede8;
+  --tx:#1a1a18;--tx2:#6b6b67;--tx3:#9a9a96;
+  --bd:rgba(0,0,0,0.12);--bd2:rgba(0,0,0,0.22);
+  --rm:8px;--rl:12px;--rx:16px;
+  --ac:#534AB7;--acbg:#EEEDFE;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans TC',sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1c1c1a;--bg2:#252523;--bg3:#2e2e2c;
+    --tx:#f0efe8;--tx2:#a8a8a2;--tx3:#6b6b67;
+    --bd:rgba(255,255,255,0.12);--bd2:rgba(255,255,255,0.22);
+    --ac:#AFA9EC;--acbg:#26215C;
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1c1c1a;
-      --bg-secondary: #252523;
-      --bg-tertiary: #2e2e2c;
-      --text: #f0efe8;
-      --text-secondary: #a8a8a2;
-      --text-tertiary: #6b6b67;
-      --border: rgba(255,255,255,0.12);
-      --border-md: rgba(255,255,255,0.22);
-      --accent: #AFA9EC;
-      --accent-bg: #26215C;
-    }
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: var(--font);
-    background: var(--bg-tertiary);
-    color: var(--text);
-    min-height: 100vh;
-    padding: 1.5rem 1rem;
-  }
-  .container { max-width: 760px; margin: 0 auto; }
-  .app-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 1.75rem;
-  }
-  .app-icon {
-    width: 48px; height: 48px;
-    border-radius: var(--radius-lg);
-    background: var(--accent-bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; color: var(--accent);
-  }
-  .app-title { font-size: 20px; font-weight: 500; }
-  .app-subtitle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
-  .card {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    margin-bottom: 1rem;
-  }
-  .tabs {
-    display: flex;
-    gap: 0;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    padding: 4px;
-    margin-bottom: 1.25rem;
-  }
-  .tab {
-    flex: 1;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-secondary);
-    cursor: pointer;
-    border: none;
-    background: none;
-    border-radius: calc(var(--radius-md) - 2px);
-    transition: all 0.15s;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .tab.active {
-    background: var(--bg);
-    color: var(--text);
-    box-shadow: 0 0 0 0.5px var(--border);
-  }
-  .tab i { font-size: 16px; }
-  .panel { display: none; }
-  .panel.active { display: block; }
-  .upload-zone {
-    border: 1.5px dashed var(--border-md);
-    border-radius: var(--radius-lg);
-    padding: 3rem 2rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--bg-secondary);
-    user-select: none;
-  }
-  .upload-zone:hover { border-color: var(--accent); background: var(--bg-tertiary); }
-  .upload-zone.dragging { border-color: var(--accent); background: var(--accent-bg); }
-  .upload-zone i { font-size: 40px; color: var(--text-tertiary); display: block; margin-bottom: 14px; }
-  .upload-zone p { font-size: 14px; color: var(--text-secondary); }
-  .upload-zone small { font-size: 12px; color: var(--text-tertiary); margin-top: 6px; display: block; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 14px;
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-md);
-    background: var(--bg);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.15s;
-    color: var(--text);
-    text-decoration: none;
-    font-family: var(--font);
-  }
-  .btn:hover { background: var(--bg-secondary); }
-  .btn:active { transform: scale(0.98); }
-  .btn-primary {
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-primary:hover { opacity: 0.88; }
-  .btn-sm { padding: 5px 10px; font-size: 12px; }
-  .btn-danger { color: #E24B4A; }
-  .thinking {
-    display: flex; align-items: center; gap: 10px;
-    padding: 14px 16px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border);
-    font-size: 13px;
-    color: var(--text-secondary);
-    margin: 1rem 0;
-  }
-  .dot-anim { display: flex; gap: 4px; flex-shrink: 0; }
-  .dot-anim span {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--text-tertiary);
-    animation: bounce 1.2s infinite;
-  }
-  .dot-anim span:nth-child(2) { animation-delay: 0.2s; }
-  .dot-anim span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
-  table { width: 100%; border-collapse: collapse; }
-  th {
-    text-align: left; font-weight: 500;
-    color: var(--text-secondary); font-size: 12px;
-    padding: 6px 8px 8px 0;
-    border-bottom: 0.5px solid var(--border);
-    letter-spacing: 0.02em;
-  }
-  td {
-    padding: 8px 8px 8px 0;
-    border-bottom: 0.5px solid var(--border);
-    font-size: 13px;
-    vertical-align: middle;
-  }
-  tr:last-child td { border-bottom: none; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    padding: 3px 9px;
-    border-radius: 99px;
-    font-size: 11px;
-    font-weight: 500;
-  }
-  .badge i { font-size: 12px; }
-  .badge-ok  { background: #EAF3DE; color: #3B6D11; }
-  .badge-high{ background: #FCEBEB; color: #A32D2D; }
-  .badge-low { background: #FAEEDA; color: #854F0B; }
-  .badge-na  { background: var(--bg-secondary); color: var(--text-tertiary); }
-  @media (prefers-color-scheme: dark) {
-    .badge-ok  { background: #173404; color: #C0DD97; }
-    .badge-high{ background: #501313; color: #F7C1C1; }
-    .badge-low { background: #412402; color: #FAC775; }
-  }
-  .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 10px;
-    margin-bottom: 1.5rem;
-  }
-  .metric-card {
-    background: var(--bg-secondary);
-    border-radius: var(--radius-md);
-    padding: 0.875rem 1rem;
-  }
-  .metric-card .m-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
-  .metric-card .m-val { font-size: 22px; font-weight: 500; }
-  .metric-card .m-sub { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
-  .chart-wrap { position: relative; width: 100%; height: 240px; margin-bottom: 1rem; }
-  .section-label {
-    font-size: 11px; font-weight: 500;
-    color: var(--text-tertiary);
-    text-transform: uppercase; letter-spacing: 0.07em;
-    margin: 1.25rem 0 0.75rem;
-  }
-  .filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
-  select {
-    font-size: 13px; padding: 7px 10px;
-    border-radius: var(--radius-md);
-    border: 0.5px solid var(--border-md);
-    background: var(--bg);
-    color: var(--text);
-    cursor: pointer;
-    font-family: var(--font);
-  }
-  .history-item {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 11px 0;
-    border-bottom: 0.5px solid var(--border);
-  }
-  .history-item:last-child { border-bottom: none; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-  .dot-green { background: #639922; }
-  .dot-amber { background: #BA7517; }
-  .dot-red { background: #E24B4A; }
-  .empty-state {
-    text-align: center;
-    padding: 3.5rem 1rem;
-    color: var(--text-tertiary);
-    font-size: 14px;
-  }
-  .empty-state i { font-size: 36px; display: block; margin-bottom: 10px; }
-  .cat-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 1.5rem;
-  }
-  .cat-avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: var(--accent-bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; color: var(--accent); flex-shrink: 0;
-  }
-  .progress-bar {
-    height: 4px; border-radius: 99px;
-    background: var(--border);
-    margin-top: 5px; overflow: hidden;
-  }
-  .progress-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
-  .range-hint { font-size: 10px; color: var(--text-tertiary); margin-top: 3px; }
-  .demo-btn-row {
-    display: flex; align-items: center; gap: 10px;
-    justify-content: center; margin-top: 14px;
-    font-size: 12px; color: var(--text-tertiary);
-  }
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.5);
-    display: flex; align-items: center; justify-content: center;
-    z-index: 100; padding: 1rem;
-  }
-  .modal {
-    background: var(--bg); border-radius: var(--radius-xl);
-    padding: 1.5rem; max-width: 480px; width: 100%;
-    border: 0.5px solid var(--border);
-    max-height: 90vh; overflow-y: auto;
-  }
-  .modal h3 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
-  .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.25rem; }
-  .api-note {
-    background: var(--accent-bg); color: var(--accent);
-    border-radius: var(--radius-md);
-    padding: 10px 14px; font-size: 12px; line-height: 1.6;
-    margin-bottom: 1rem;
-  }
-  footer {
-    text-align: center;
-    font-size: 11px;
-    color: var(--text-tertiary);
-    margin-top: 2rem;
-    padding-bottom: 1rem;
-  }
-  input[type="text"], input[type="date"] {
-    width: 100%; padding: 8px 10px;
-    border: 0.5px solid var(--border-md);
-    border-radius: var(--radius-md);
-    font-size: 13px; color: var(--text);
-    background: var(--bg);
-    font-family: var(--font);
-    margin-top: 4px;
-  }
-  label.field-label { font-size: 12px; color: var(--text-secondary); display: block; margin-bottom: 8px; }
-  .api-key-row { display: flex; gap: 8px; align-items: center; }
-  .api-key-row input { flex: 1; }
-  @media (max-width: 500px) {
-    body { padding: 1rem 0.75rem; }
-    th:nth-child(4), td:nth-child(4) { display: none; }
-    .tab span { display: none; }
-  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg3);color:var(--tx);min-height:100vh;padding:1.5rem 1rem}
+.wrap{max-width:780px;margin:0 auto}
+.hdr{display:flex;align-items:center;gap:14px;margin-bottom:1.75rem}
+.hdr-icon{width:48px;height:48px;border-radius:var(--rl);background:var(--acbg);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ac);flex-shrink:0}
+.hdr-title{font-size:20px;font-weight:500}
+.hdr-sub{font-size:13px;color:var(--tx2);margin-top:2px}
+.tabs{display:flex;background:var(--bg2);border-radius:var(--rm);padding:4px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px 10px;font-size:13px;font-weight:500;color:var(--tx2);cursor:pointer;border:none;background:none;border-radius:calc(var(--rm) - 2px);transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--font)}
+.tab.active{background:var(--bg);color:var(--tx);box-shadow:0 0 0 0.5px var(--bd)}
+.tab i{font-size:16px}
+.panel{display:none}.panel.active{display:block}
+.card{background:var(--bg);border:0.5px solid var(--bd);border-radius:var(--rl);padding:1.25rem;margin-bottom:1rem}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;color:var(--tx);text-decoration:none;font-family:var(--font)}
+.btn:hover{background:var(--bg2)}.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--ac);color:#fff;border-color:var(--ac)}.btn-primary:hover{opacity:.88}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-danger{color:#E24B4A}
+.upload-zone{border:1.5px dashed var(--bd2);border-radius:var(--rl);padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg2)}
+.upload-zone:hover,.upload-zone.dragging{border-color:var(--ac);background:var(--acbg)}
+.upload-zone i{font-size:40px;color:var(--tx3);display:block;margin-bottom:14px}
+.upload-zone p{font-size:14px;color:var(--tx2)}
+.upload-zone small{font-size:12px;color:var(--tx3);margin-top:6px;display:block}
+.thinking{display:flex;align-items:center;gap:10px;padding:14px 16px;background:var(--bg2);border-radius:var(--rm);border:0.5px solid var(--bd);font-size:13px;color:var(--tx2);margin:1rem 0}
+.dots{display:flex;gap:4px;flex-shrink:0}
+.dots span{width:6px;height:6px;border-radius:50%;background:var(--tx3);animation:bop 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.err-box{display:none;background:#FCEBEB;color:#A32D2D;border:0.5px solid #F09595;border-radius:var(--rm);padding:12px 16px;font-size:13px;line-height:1.6;margin:1rem 0}
+@media(prefers-color-scheme:dark){.err-box{background:#501313;color:#F7C1C1;border-color:#A32D2D}}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-weight:500;color:var(--tx2);font-size:12px;padding:6px 6px 8px 0;border-bottom:0.5px solid var(--bd);letter-spacing:.02em}
+td{padding:8px 6px 8px 0;border-bottom:0.5px solid var(--bd);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:500}
+.badge i{font-size:12px}
+.ok{background:#EAF3DE;color:#3B6D11}
+.hi{background:#FCEBEB;color:#A32D2D}
+.lo{background:#FAEEDA;color:#854F0B}
+.na{background:var(--bg2);color:var(--tx3)}
+@media(prefers-color-scheme:dark){
+  .ok{background:#173404;color:#C0DD97}
+  .hi{background:#501313;color:#F7C1C1}
+  .lo{background:#412402;color:#FAC775}
+}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem}
+.mcard{background:var(--bg2);border-radius:var(--rm);padding:.875rem 1rem}
+.mcard .ml{font-size:12px;color:var(--tx2);margin-bottom:4px}
+.mcard .mv{font-size:22px;font-weight:500}
+.mcard .ms{font-size:11px;color:var(--tx3);margin-top:2px}
+.chart-wrap{position:relative;width:100%;height:240px;margin-bottom:1rem}
+.slabel{font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin:1.25rem 0 .75rem}
+.frow{display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+select{font-size:13px;padding:7px 10px;border-radius:var(--rm);border:0.5px solid var(--bd2);background:var(--bg);color:var(--tx);cursor:pointer;font-family:var(--font)}
+.hitem{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:0.5px solid var(--bd)}
+.hitem:last-child{border-bottom:none}
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dg{background:#639922}.da{background:#BA7517}.dr{background:#E24B4A}
+.empty{text-align:center;padding:3.5rem 1rem;color:var(--tx3);font-size:14px}
+.empty i{font-size:36px;display:block;margin-bottom:10px}
+.pbar{height:4px;border-radius:99px;background:var(--bd);margin-top:5px;overflow:hidden}
+.pfill{height:100%;border-radius:99px;transition:width .4s}
+.rhint{font-size:10px;color:var(--tx3);margin-top:3px}
+.demo-row{display:flex;align-items:center;gap:10px;justify-content:center;margin-top:14px;font-size:12px;color:var(--tx3)}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:1rem}
+.modal{background:var(--bg);border-radius:var(--rx);padding:1.5rem;max-width:500px;width:100%;border:0.5px solid var(--bd);max-height:90vh;overflow-y:auto}
+.modal h3{font-size:16px;font-weight:500;margin-bottom:1rem}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:1.25rem}
+.api-note{background:var(--acbg);color:var(--ac);border-radius:var(--rm);padding:10px 14px;font-size:12px;line-height:1.6;margin-bottom:1rem}
+input[type=text],input[type=password]{width:100%;padding:8px 10px;border:0.5px solid var(--bd2);border-radius:var(--rm);font-size:13px;color:var(--tx);background:var(--bg);font-family:var(--font)}
+.api-row{display:flex;gap:8px;align-items:center}
+.api-row input{flex:1}
+footer{text-align:center;font-size:11px;color:var(--tx3);margin-top:2rem;padding-bottom:1rem}
+.tag-grp{display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem}
+.tag{font-size:11px;padding:2px 8px;border-radius:99px;border:0.5px solid var(--bd);color:var(--tx2)}
+@media(max-width:500px){
+  th:nth-child(4),td:nth-child(4){display:none}
+  .tab span{display:none}
+}
 </style>
 </head>
 <body>
-<div class="container">
+<div class="wrap">
 
-  <!-- Header -->
-  <div class="app-header">
-    <div class="app-icon"><i class="ti ti-paw" aria-hidden="true"></i></div>
-    <div>
-      <div class="app-title" id="cat-display-name">我的貓咪</div>
-      <div class="app-subtitle">血液報告數值追蹤系統</div>
+<!-- Header -->
+<div class="hdr">
+  <div class="hdr-icon"><i class="ti ti-paw" aria-hidden="true"></i></div>
+  <div>
+    <div class="hdr-title" id="cat-name">我的貓咪</div>
+    <div class="hdr-sub">血液報告數值追蹤系統</div>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="btn btn-sm" onclick="editName()"><i class="ti ti-edit" aria-hidden="true"></i> 名字</button>
+    <button class="btn btn-sm" onclick="openSettings()"><i class="ti ti-settings" aria-hidden="true"></i> 設定</button>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+  <button class="tab active" onclick="tab('scan')" id="tab-scan"><i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span></button>
+  <button class="tab" onclick="tab('trends')" id="tab-trends"><i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span></button>
+  <button class="tab" onclick="tab('history')" id="tab-history"><i class="ti ti-history" aria-hidden="true"></i><span>歷史紀錄</span></button>
+</div>
+
+<!-- SCAN -->
+<div id="panel-scan" class="panel active">
+  <div id="upload-area">
+    <div class="upload-zone" id="dropzone"
+         onclick="document.getElementById('finput').click()"
+         ondragover="ev.preventDefault();this.classList.add('dragging')"
+         ondragleave="this.classList.remove('dragging')"
+         ondrop="onDrop(event)">
+      <i class="ti ti-cloud-upload" aria-hidden="true"></i>
+      <p>點擊或拖曳上傳血液報告</p>
+      <small>支援 JPG、PNG、PDF · 圖片越清晰識別越準確</small>
     </div>
-    <div style="margin-left:auto; display:flex; gap:8px;">
-      <button class="btn btn-sm" onclick="editCatName()"><i class="ti ti-edit" aria-hidden="true"></i> 編輯名字</button>
-      <button class="btn btn-sm" onclick="openSettings()"><i class="ti ti-settings" aria-hidden="true"></i> 設定</button>
+    <input type="file" id="finput" accept="image/*,.pdf" style="display:none" onchange="onFile(event)">
+    <div class="demo-row">
+      <span>沒有報告？</span>
+      <button class="btn btn-sm" onclick="loadDemo()"><i class="ti ti-sparkles" aria-hidden="true"></i> 載入範例</button>
     </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('scan')" id="tab-scan">
-      <i class="ti ti-scan" aria-hidden="true"></i><span>掃描報告</span>
-    </button>
-    <button class="tab" onclick="switchTab('trends')" id="tab-trends">
-      <i class="ti ti-chart-line" aria-hidden="true"></i><span>趨勢追蹤</span>
-    </button>
-    <button class="tab" onclick="switchTab('history')" id="tab-history">
-      <i class="ti ti-history" aria-hidden="true"></i><span>歷史紀錄</span>
-    </button>
-  </div>
-
-  <!-- SCAN PANEL -->
-  <div id="panel-scan" class="panel active">
-    <div id="upload-area">
-      <div class="upload-zone" id="drop-zone"
-           onclick="document.getElementById('file-input').click()"
-           ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <i class="ti ti-cloud-upload" aria-hidden="true"></i>
-        <p>點擊或拖曳上傳血液報告</p>
-        <small>支援 JPG、PNG、PDF 格式 · 圖片越清晰識別越準確</small>
-      </div>
-      <input type="file" id="file-input" accept="image/*,.pdf" style="display:none" onchange="handleFileUpload(event)">
-      <div class="demo-btn-row">
-        <span>沒有報告？</span>
-        <button class="btn btn-sm" onclick="loadDemo()">
-          <i class="ti ti-sparkles" aria-hidden="true"></i> 載入範例資料
-        </button>
-      </div>
-    </div>
-
-    <div id="scan-thinking" style="display:none">
-      <div class="thinking">
-        <div class="dot-anim"><span></span><span></span><span></span></div>
-        <span>AI 正在分析血液報告，識別數值中⋯⋯</span>
-      </div>
-    </div>
-
-    <div id="scan-result" style="display:none">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem;">
-        <span style="font-size:13px; color:var(--text-secondary);">已識別的數值</span>
-        <div style="display:flex; gap:8px;">
-          <button class="btn btn-sm" onclick="resetScan()"><i class="ti ti-x" aria-hidden="true"></i> 取消</button>
-          <button class="btn btn-sm btn-primary" onclick="saveRecord()"><i class="ti ti-device-floppy" aria-hidden="true"></i> 儲存紀錄</button>
-        </div>
-      </div>
-      <div class="card">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px;">
-          <i class="ti ti-calendar" style="color:var(--text-secondary); font-size:16px;" aria-hidden="true"></i>
-          <span style="font-weight:500;" id="result-date">—</span>
-          <button class="btn btn-sm" onclick="editResultDate()" style="margin-left:auto;">
-            <i class="ti ti-pencil" aria-hidden="true"></i> 修改日期
-          </button>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>項目</th>
-              <th>數值</th>
-              <th>單位</th>
-              <th>參考範圍</th>
-              <th>狀態</th>
-            </tr>
-          </thead>
-          <tbody id="result-tbody"></tbody>
-        </table>
-      </div>
-      <div class="card" id="ai-summary-card">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-          <i class="ti ti-bulb" style="color:var(--text-secondary); font-size:16px;" aria-hidden="true"></i>
-          <span style="font-weight:500; font-size:14px;">AI 摘要</span>
-        </div>
-        <p id="ai-summary-text" style="font-size:13px; color:var(--text-secondary); line-height:1.75;"></p>
-      </div>
+  <div id="thinking" style="display:none">
+    <div class="thinking">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <span id="think-msg">AI 正在分析血液報告，識別數值中⋯⋯</span>
     </div>
   </div>
 
-  <!-- TRENDS PANEL -->
-  <div id="panel-trends" class="panel">
-    <div class="filter-row">
-      <select id="trend-indicator" onchange="renderTrends()">
-        <option value="RBC">RBC（紅血球）</option>
-        <option value="HCT">HCT（血容比）</option>
-        <option value="HGB">HGB（血紅素）</option>
-        <option value="MCV">MCV</option>
-        <option value="MCH">MCH</option>
-        <option value="MCHC">MCHC</option>
-        <option value="WBC">WBC（白血球）</option>
-        <option value="PLT">PLT（血小板）</option>
-        <option value="BUN">BUN（尿素氮）</option>
-        <option value="CRE">CRE（肌酸酐）</option>
-        <option value="ALT">ALT（肝臟酵素）</option>
-        <option value="TP">TP（總蛋白）</option>
-        <option value="GLU">GLU（血糖）</option>
-        <option value="SDMA">SDMA</option>
-      </select>
-      <select id="trend-period" onchange="renderTrends()">
-        <option value="all">全部紀錄</option>
-        <option value="6">近 6 筆</option>
-        <option value="3">近 3 筆</option>
-      </select>
-    </div>
+  <div id="err-area" class="err-box"></div>
 
-    <div id="trends-empty" class="empty-state" style="display:none;">
-      <i class="ti ti-chart-line" aria-hidden="true"></i>
-      尚無資料<br>
-      <button class="btn btn-sm" style="margin-top:12px;" onclick="switchTab('scan')">去掃描第一份報告</button>
-    </div>
-
-    <div id="trends-content" style="display:none;">
-      <div class="metric-grid" id="trend-summary"></div>
-      <div class="card" style="padding:1rem;">
-        <div class="chart-wrap">
-          <canvas id="trendChart" role="img" aria-label="血液數值趨勢折線圖"></canvas>
-        </div>
-      </div>
-      <p class="section-label">所有指標概覽</p>
-      <div class="card" style="padding:1rem 1.25rem;">
-        <div id="indicators-overview"></div>
+  <div id="result-area" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem">
+      <span style="font-size:13px;color:var(--tx2)">已識別的數值</span>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" onclick="resetScan()"><i class="ti ti-x" aria-hidden="true"></i> 取消</button>
+        <button class="btn btn-sm btn-primary" onclick="saveRec()"><i class="ti ti-device-floppy" aria-hidden="true"></i> 儲存紀錄</button>
       </div>
     </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+        <i class="ti ti-calendar" style="color:var(--tx2);font-size:16px" aria-hidden="true"></i>
+        <span style="font-weight:500" id="res-date">—</span>
+        <button class="btn btn-sm" style="margin-left:auto" onclick="editDate()"><i class="ti ti-pencil" aria-hidden="true"></i> 修改日期</button>
+      </div>
+      <table>
+        <thead><tr><th>項目</th><th>數值</th><th>單位</th><th>參考範圍</th><th>狀態</th></tr></thead>
+        <tbody id="res-tbody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <i class="ti ti-bulb" style="color:var(--tx2);font-size:16px" aria-hidden="true"></i>
+        <span style="font-weight:500;font-size:14px">AI 摘要</span>
+      </div>
+      <p id="res-summary" style="font-size:13px;color:var(--tx2);line-height:1.75"></p>
+    </div>
   </div>
+</div>
 
-  <!-- HISTORY PANEL -->
-  <div id="panel-history" class="panel">
-    <div style="display:flex; justify-content:flex-end; margin-bottom:0.75rem; gap:8px;">
-      <button class="btn btn-sm" onclick="exportData()"><i class="ti ti-download" aria-hidden="true"></i> 匯出 JSON</button>
-      <button class="btn btn-sm" onclick="document.getElementById('import-input').click()"><i class="ti ti-upload" aria-hidden="true"></i> 匯入 JSON</button>
-      <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)">
-    </div>
-    <div id="history-empty" class="empty-state" style="display:none;">
-      <i class="ti ti-notes" aria-hidden="true"></i>
-      還沒有任何紀錄<br>
-      <button class="btn btn-sm" style="margin-top:12px;" onclick="switchTab('scan')">去掃描第一份報告</button>
-    </div>
-    <div class="card" id="history-card" style="display:none; padding:0.75rem 1.25rem;">
-      <div id="history-list"></div>
-    </div>
+<!-- TRENDS -->
+<div id="panel-trends" class="panel">
+  <div class="frow">
+    <select id="tr-ind" onchange="renderTrends()">
+      <option value="RBC">RBC（紅血球）</option>
+      <option value="HCT">HCT（血容比）</option>
+      <option value="HGB">HGB（血紅素）</option>
+      <option value="MCV">MCV</option><option value="MCH">MCH</option><option value="MCHC">MCHC</option>
+      <option value="WBC">WBC（白血球）</option>
+      <option value="PLT">PLT（血小板）</option>
+      <option value="BUN">BUN（尿素氮）</option>
+      <option value="CREA">CREA（肌酸酐）</option>
+      <option value="ALT">ALT（肝臟酵素）</option>
+      <option value="PHOS">PHOS（磷）</option>
+      <option value="TP">TP（總蛋白）</option>
+      <option value="GLU">GLU（血糖）</option>
+      <option value="SDMA">SDMA</option>
+    </select>
+    <select id="tr-period" onchange="renderTrends()">
+      <option value="all">全部紀錄</option>
+      <option value="6">近 6 筆</option>
+      <option value="3">近 3 筆</option>
+    </select>
   </div>
+  <div id="tr-empty" class="empty" style="display:none">
+    <i class="ti ti-chart-line" aria-hidden="true"></i>
+    尚無資料<br>
+    <button class="btn btn-sm" style="margin-top:12px" onclick="tab('scan')">去掃描第一份報告</button>
+  </div>
+  <div id="tr-content" style="display:none">
+    <div class="mgrid" id="tr-summary"></div>
+    <div class="card" style="padding:1rem">
+      <div class="chart-wrap"><canvas id="tChart" role="img" aria-label="血液數值趨勢折線圖"></canvas></div>
+    </div>
+    <p class="slabel">所有指標概覽</p>
+    <div class="card" style="padding:1rem 1.25rem"><div id="tr-overview"></div></div>
+  </div>
+</div>
 
-  <footer>貓咪血液追蹤系統 · 資料儲存於本機瀏覽器 · 僅供參考，請以獸醫診斷為準</footer>
+<!-- HISTORY -->
+<div id="panel-history" class="panel">
+  <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem;gap:8px">
+    <button class="btn btn-sm" onclick="exportJSON()"><i class="ti ti-download" aria-hidden="true"></i> 匯出</button>
+    <button class="btn btn-sm" onclick="document.getElementById('iinput').click()"><i class="ti ti-upload" aria-hidden="true"></i> 匯入</button>
+    <input type="file" id="iinput" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+  <div id="h-empty" class="empty" style="display:none">
+    <i class="ti ti-notes" aria-hidden="true"></i>
+    還沒有任何紀錄<br>
+    <button class="btn btn-sm" style="margin-top:12px" onclick="tab('scan')">去掃描第一份報告</button>
+  </div>
+  <div class="card" id="h-card" style="display:none;padding:.75rem 1.25rem">
+    <div id="h-list"></div>
+  </div>
+</div>
+
+<footer>貓咪血液追蹤系統 · 資料僅存於本機瀏覽器 · 僅供參考，請以獸醫診斷為準</footer>
 </div>
 
 <!-- Settings Modal -->
-<div id="settings-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeSettings()">
+<div id="modal-settings" class="modal-ov" style="display:none" onclick="if(event.target===this)closeSettings()">
   <div class="modal">
     <h3><i class="ti ti-settings" aria-hidden="true"></i> 設定</h3>
     <div class="api-note">
-      <strong>關於 API 金鑰：</strong><br>
-      輸入您的 Anthropic API 金鑰以啟用 AI 自動識別功能。金鑰僅儲存在您的瀏覽器本機，不會傳送至任何伺服器。
-      <br>前往 <a href="https://console.anthropic.com" target="_blank" style="color:inherit;">console.anthropic.com</a> 取得金鑰。
+      <strong>Anthropic API 金鑰</strong><br>
+      前往 <a href="https://console.anthropic.com" target="_blank" style="color:inherit">console.anthropic.com</a> 取得金鑰。金鑰僅儲存於瀏覽器本機，不會外傳。
     </div>
-    <label class="field-label">Anthropic API 金鑰</label>
-    <div class="api-key-row">
-      <input type="text" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off">
-      <button class="btn btn-sm" onclick="toggleApiKeyVis()" id="api-vis-btn"><i class="ti ti-eye" aria-hidden="true"></i></button>
+    <div class="api-row">
+      <input type="password" id="api-inp" placeholder="sk-ant-api03-...">
+      <button class="btn btn-sm" onclick="toggleVis()"><i class="ti ti-eye" aria-hidden="true"></i></button>
     </div>
-    <div class="modal-footer">
+    <div class="mfoot">
       <button class="btn" onclick="closeSettings()">取消</button>
       <button class="btn btn-primary" onclick="saveSettings()"><i class="ti ti-check" aria-hidden="true"></i> 儲存</button>
     </div>
@@ -485,486 +263,428 @@
 </div>
 
 <!-- View Record Modal -->
-<div id="view-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)document.getElementById('view-modal').style.display='none'">
-  <div class="modal" style="max-width:560px;">
-    <h3 id="view-modal-title"></h3>
-    <table>
-      <thead>
-        <tr><th>項目</th><th>數值</th><th>單位</th><th>狀態</th></tr>
-      </thead>
-      <tbody id="view-modal-body"></tbody>
-    </table>
-    <div id="view-modal-summary" style="margin-top:1rem; font-size:13px; color:var(--text-secondary); line-height:1.75;"></div>
-    <div class="modal-footer">
-      <button class="btn" onclick="document.getElementById('view-modal').style.display='none'">關閉</button>
-    </div>
+<div id="modal-view" class="modal-ov" style="display:none" onclick="if(event.target===this)this.style.display='none'">
+  <div class="modal" style="max-width:560px">
+    <h3 id="vm-title"></h3>
+    <table><thead><tr><th>項目</th><th>數值</th><th>單位</th><th>狀態</th></tr></thead><tbody id="vm-body"></tbody></table>
+    <p id="vm-summary" style="margin-top:1rem;font-size:13px;color:var(--tx2);line-height:1.75"></p>
+    <div class="mfoot"><button class="btn" onclick="document.getElementById('modal-view').style.display='none'">關閉</button></div>
   </div>
 </div>
 
 <script>
-const INDICATORS = {
-  RBC:  { name:'RBC（紅血球）',   unit:'M/μL',      low:6.54, high:12.20 },
-  HCT:  { name:'HCT（血容比）',   unit:'%',          low:30.3, high:52.3  },
-  HGB:  { name:'HGB（血紅素）',   unit:'g/dL',       low:9.8,  high:16.2  },
-  MCV:  { name:'MCV（平均紅血球容積）', unit:'fL',   low:35.9, high:53.1  },
-  MCH:  { name:'MCH（平均血紅素量）',  unit:'pg',    low:11.8, high:17.3  },
-  MCHC: { name:'MCHC（平均血紅素濃度）',unit:'g/dL',low:28.1, high:35.8  },
-  WBC:  { name:'WBC（白血球）',   unit:'K/μL',      low:2.87, high:17.02 },
-  PLT:  { name:'PLT（血小板）',   unit:'K/μL',      low:151,  high:600   },
-  BUN:  { name:'BUN（尿素氮）',   unit:'mg/dL',      low:14,   high:36    },
-  CRE:  { name:'CRE（肌酸酐）',   unit:'mg/dL',      low:0.8,  high:2.4   },
-  ALT:  { name:'ALT（肝臟酵素）', unit:'U/L',        low:10,   high:100   },
-  TP:   { name:'TP（總蛋白）',    unit:'g/dL',       low:5.4,  high:8.2   },
-  GLU:  { name:'GLU（血糖）',     unit:'mg/dL',      low:70,   high:150   },
-  SDMA: { name:'SDMA',            unit:'μg/dL',      low:0,    high:14    }
+// ── Indicators ──────────────────────────────────────────────────────────────
+const IND = {
+  RBC:  {name:'RBC（紅血球）',        unit:'M/μL',   low:6.54, high:12.20},
+  HCT:  {name:'HCT（血容比）',        unit:'%',      low:30.3, high:52.3 },
+  HGB:  {name:'HGB（血紅素）',        unit:'g/dL',   low:9.8,  high:16.2 },
+  MCV:  {name:'MCV（平均紅血球容積）',unit:'fL',     low:35.9, high:53.1 },
+  MCH:  {name:'MCH（平均血紅素量）',  unit:'pg',     low:11.8, high:17.3 },
+  MCHC: {name:'MCHC（平均血紅素濃度）',unit:'g/dL', low:28.1, high:35.8 },
+  WBC:  {name:'WBC（白血球）',        unit:'K/μL',   low:2.87, high:17.02},
+  PLT:  {name:'PLT（血小板）',        unit:'K/μL',   low:151,  high:600  },
+  BUN:  {name:'BUN（尿素氮）',        unit:'mg/dL',  low:16,   high:36   },
+  CREA: {name:'CREA（肌酸酐）',       unit:'mg/dL',  low:0.8,  high:2.4  },
+  ALT:  {name:'ALT（肝臟酵素）',      unit:'U/L',    low:12,   high:130  },
+  PHOS: {name:'PHOS（磷）',           unit:'mg/dL',  low:3.1,  high:7.5  },
+  TP:   {name:'TP（總蛋白）',         unit:'g/dL',   low:5.4,  high:8.2  },
+  GLU:  {name:'GLU（血糖）',          unit:'mg/dL',  low:70,   high:150  },
+  SDMA: {name:'SDMA',                 unit:'μg/dL',  low:0,    high:14   },
 };
 
-const DEMO_RECORDS = [
-  { date:'2024-03-10', values:{ BUN:18, CRE:1.2, ALT:45, TP:7.0, GLU:95,  WBC:8.2,  RBC:7.5, HCT:38, PLT:280, SDMA:8  }, summary:'本次血液報告各項數值均在正常範圍內，貓咪整體健康狀況良好。建議維持目前飲食習慣，按時回診追蹤。', otherValues:[] },
-  { date:'2024-06-15', values:{ BUN:22, CRE:1.4, ALT:52, TP:6.8, GLU:102, WBC:9.1,  RBC:7.2, HCT:37, PLT:260, SDMA:10 }, summary:'各項數值仍在參考範圍內，但 BUN 與 CRE 較上次略有上升。建議增加飲水量，觀察排尿情況，3 個月後回診複查腎臟功能。', otherValues:[] },
-  { date:'2024-09-20', values:{ BUN:28, CRE:1.8, ALT:68, TP:6.5, GLU:98,  WBC:10.3, RBC:6.9, HCT:35, PLT:240, SDMA:12 }, summary:'BUN、CRE、ALT 持續上升趨勢，腎臟指標接近參考值上限。建議與獸醫討論是否需要腎臟保護飲食，並縮短回診間隔至 2 個月。', otherValues:[] },
-  { date:'2025-01-15', values:{ BUN:31, CRE:2.1, ALT:79, TP:6.2, GLU:105, WBC:11.0, RBC:6.6, HCT:34, PLT:225, SDMA:13 }, summary:'BUN（31）與 CRE（2.1）已接近或超出正常上限，SDMA 數值偏高，顯示腎臟功能持續下降。ALT 偏高需追蹤肝臟狀況。強烈建議盡速與獸醫討論治療方案與飲食調整。', otherValues:[] }
+// Also accept CRE as alias for CREA
+const KEY_ALIAS = {CRE:'CREA'};
+
+// ── Demo data ────────────────────────────────────────────────────────────────
+const DEMO = [
+  {date:'2024-03-10', values:{RBC:7.5,HCT:38,HGB:12.1,WBC:8.2,PLT:280,BUN:18,CREA:1.2,ALT:55,PHOS:4.2}, otherValues:[], summary:'各項數值均在正常範圍內，貓咪整體狀況良好。'},
+  {date:'2024-09-18', values:{RBC:7.0,HCT:36,HGB:11.5,WBC:9.1,PLT:260,BUN:24,CREA:1.6,ALT:82,PHOS:4.8}, otherValues:[], summary:'BUN 與 CREA 略有上升，ALT 偏高需追蹤，建議增加飲水並縮短回診間隔。'},
+  {date:'2025-01-10', values:{RBC:6.6,HCT:34,HGB:10.8,WBC:10.3,PLT:240,BUN:30,CREA:2.1,ALT:180,PHOS:5.5}, otherValues:[], summary:'CREA 接近上限，ALT 明顯偏高，腎臟與肝臟指標需密切追蹤，建議與獸醫討論治療方案。'},
+  {date:'2026-05-09', values:{RBC:5.5,HCT:27.4,HGB:10.2,MCH:18.5,MCHC:37.2,WBC:8.22,PLT:226,BUN:32,CREA:2.7,ALT:427,PHOS:5.9}, otherValues:[{name:'MCV',value:'49.8',unit:'fL',range:'35.9-53.1',status:'正常'},{name:'RDW',value:'20.4',unit:'%',range:'15.0-27.0',status:'正常'},{name:'NEU',value:'5.53',unit:'K/μL',range:'2.30-10.29',status:'正常'},{name:'LYM',value:'1.69',unit:'K/μL',range:'0.92-6.88',status:'正常'},{name:'BUN/CREA',value:'12',unit:'',range:'',status:'正常'}], summary:'⚠️ 本次報告有多項異常：CREA 2.7（偏高，腎臟指標惡化）、ALT 427（嚴重偏高，肝臟問題）、MCH 18.5 偏高、HCT 27.4 偏低（輕度貧血）。建議立即與獸醫討論肝腎功能治療方案，不宜延誤。'},
 ];
 
+// ── State ────────────────────────────────────────────────────────────────────
 let records = [];
 let catName = '我的貓咪';
-let apiKey = '';
-let trendChart = null;
+let apiKey  = '';
+let chart   = null;
+let pending = null;
 
-function loadFromStorage() {
+function load() {
   try {
-    const r = localStorage.getItem('cat-blood-records');
-    if(r) records = JSON.parse(r);
-    const n = localStorage.getItem('cat-blood-name');
-    if(n) { catName = n; document.getElementById('cat-display-name').textContent = n; }
-    const k = localStorage.getItem('cat-blood-apikey');
-    if(k) apiKey = k;
-  } catch(e) {}
+    const r = localStorage.getItem('cbr'); if(r) records = JSON.parse(r);
+    const n = localStorage.getItem('cbn'); if(n) { catName=n; document.getElementById('cat-name').textContent=n; }
+    const k = localStorage.getItem('cbk'); if(k) apiKey=k;
+  } catch(e){}
+}
+function save() {
+  try {
+    localStorage.setItem('cbr', JSON.stringify(records));
+    localStorage.setItem('cbn', catName);
+    if(apiKey) localStorage.setItem('cbk', apiKey);
+  } catch(e){}
 }
 
-function saveToStorage() {
-  try {
-    localStorage.setItem('cat-blood-records', JSON.stringify(records));
-    localStorage.setItem('cat-blood-name', catName);
-    if(apiKey) localStorage.setItem('cat-blood-apikey', apiKey);
-  } catch(e) {}
-}
-
-function switchTab(t) {
-  ['scan','trends','history'].forEach(id => {
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function tab(t) {
+  ['scan','trends','history'].forEach(id=>{
     document.getElementById('tab-'+id).classList.toggle('active', id===t);
     document.getElementById('panel-'+id).classList.toggle('active', id===t);
   });
-  if(t==='trends') renderTrends();
+  if(t==='trends')  renderTrends();
   if(t==='history') renderHistory();
 }
 
-function editCatName() {
-  const n = prompt('輸入貓咪名字：', catName);
-  if(n && n.trim()) {
-    catName = n.trim();
-    document.getElementById('cat-display-name').textContent = catName;
-    saveToStorage();
-  }
+// ── Settings ─────────────────────────────────────────────────────────────────
+function editName() {
+  const n=prompt('輸入貓咪名字：', catName);
+  if(n&&n.trim()){catName=n.trim(); document.getElementById('cat-name').textContent=catName; save();}
 }
-
 function openSettings() {
-  document.getElementById('api-key-input').value = apiKey;
-  document.getElementById('api-key-input').type = 'password';
-  document.getElementById('settings-modal').style.display = 'flex';
+  document.getElementById('api-inp').value=apiKey;
+  document.getElementById('api-inp').type='password';
+  document.getElementById('modal-settings').style.display='flex';
 }
-function closeSettings() { document.getElementById('settings-modal').style.display = 'none'; }
-function saveSettings() {
-  apiKey = document.getElementById('api-key-input').value.trim();
-  saveToStorage();
-  closeSettings();
-  alert('設定已儲存！');
+function closeSettings(){document.getElementById('modal-settings').style.display='none';}
+function saveSettings(){
+  apiKey=document.getElementById('api-inp').value.trim();
+  save(); closeSettings(); alert('✓ 設定已儲存');
 }
-function toggleApiKeyVis() {
-  const inp = document.getElementById('api-key-input');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-}
+function toggleVis(){const i=document.getElementById('api-inp');i.type=i.type==='password'?'text':'password';}
 
-function onDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('dragging'); }
-function onDragLeave()  { document.getElementById('drop-zone').classList.remove('dragging'); }
-function onDrop(e) {
+// ── Upload ────────────────────────────────────────────────────────────────────
+function onDrop(e){
   e.preventDefault();
-  document.getElementById('drop-zone').classList.remove('dragging');
-  const file = e.dataTransfer.files[0];
-  if(file) processReport(file);
+  document.getElementById('dropzone').classList.remove('dragging');
+  const f=e.dataTransfer.files[0]; if(f) processFile(f);
 }
-function handleFileUpload(e) { const f = e.target.files[0]; if(f) processReport(f); }
+function onFile(e){const f=e.target.files[0]; if(f) processFile(f);}
 
-async function processReport(file) {
-  if(!apiKey) {
-    alert('請先在設定中輸入 Anthropic API 金鑰，才能使用 AI 識別功能。');
-    openSettings();
-    return;
-  }
-  document.getElementById('upload-area').style.display = 'none';
-  document.getElementById('scan-thinking').style.display = 'block';
-  document.getElementById('scan-result').style.display = 'none';
+function showErr(msg){
+  const el=document.getElementById('err-area');
+  el.style.display='block';
+  el.innerHTML='<i class="ti ti-alert-circle" style="font-size:16px;vertical-align:-2px;margin-right:6px"></i><strong>分析失敗：</strong>' + msg
+    + '<br><small style="margin-top:6px;display:block;opacity:.8">提示：確認 API 金鑰正確、圖片清晰，或重新整理後再試。</small>';
+}
+
+async function processFile(file) {
+  if(!apiKey){alert('請先在「設定」中輸入 Anthropic API 金鑰。'); openSettings(); return;}
+  document.getElementById('upload-area').style.display='none';
+  document.getElementById('thinking').style.display='block';
+  document.getElementById('result-area').style.display='none';
+  document.getElementById('err-area').style.display='none';
 
   try {
-    const base64Data = await new Promise((res, rej) => {
-      const r = new FileReader();
-      r.onload = () => res(r.result.split(',')[1]);
-      r.onerror = () => rej(new Error('檔案讀取失敗'));
+    const b64 = await new Promise((ok,fail)=>{
+      const r=new FileReader();
+      r.onload=()=>ok(r.result.split(',')[1]);
+      r.onerror=()=>fail(new Error('檔案讀取失敗'));
       r.readAsDataURL(file);
     });
 
-    const isPDF = file.type === 'application/pdf';
-    const contentBlock = isPDF
-      ? { type:'document', source:{ type:'base64', media_type:'application/pdf', data:base64Data } }
-      : { type:'image',    source:{ type:'base64', media_type:file.type,          data:base64Data } };
+    const isPDF = file.type==='application/pdf';
+    const mediaType = isPDF ? 'application/pdf' : (file.type || 'image/jpeg');
+    const block = isPDF
+      ? {type:'document', source:{type:'base64', media_type:mediaType, data:b64}}
+      : {type:'image',    source:{type:'base64', media_type:mediaType, data:b64}};
 
-    const prompt = `你是一位獸醫血液報告 OCR 分析助理。這是一張用手機拍攝的貓咪血液檢驗報告照片，可能有角度傾斜、光線不均等問題，請盡力辨識所有數值。
+    const today = new Date().toISOString().slice(0,10);
+    const prompt = `你是獸醫血液報告 OCR 分析助理。請分析這張貓咪血液報告照片，辨識所有數值。
 
-重要規則：
-- 回傳純 JSON，絕對不能有 markdown backtick、說明文字或其他任何非 JSON 內容
-- 數值一律轉為數字（浮點數或整數），不要帶單位
-- 找不到的欄位填 null
-- 日期格式 YYYY-MM-DD，若報告上沒有則填今日 ${new Date().toISOString().slice(0,10)}
+規則（嚴格遵守）：
+1. 只回傳純 JSON，不加任何 markdown、說明或前後文字
+2. 數值轉為數字型（浮點或整數），不帶單位
+3. 找不到的核心欄位填 null
+4. 日期無法辨識則填 ${today}
+5. CRE 和 CREA 是同一項目，統一用 CREA
 
-請回傳以下格式：
-{"date":"YYYY-MM-DD","values":{"BUN":null,"CRE":null,"ALT":null,"TP":null,"GLU":null,"WBC":null,"RBC":null,"HCT":null,"PLT":null,"SDMA":null,"HGB":null,"MCV":null,"MCH":null,"MCHC":null},"otherValues":[{"name":"項目名稱","value":"數值字串","unit":"單位","range":"參考範圍","status":"正常/偏高/偏低"}],"summary":"2-4句中文摘要：整體狀況、異常項目（標明偏高或偏低）、建議注意事項"}
+回傳格式（完整複製此結構，只填值）：
+{"date":"YYYY-MM-DD","values":{"RBC":null,"HCT":null,"HGB":null,"MCV":null,"MCH":null,"MCHC":null,"WBC":null,"PLT":null,"BUN":null,"CREA":null,"ALT":null,"PHOS":null,"TP":null,"GLU":null,"SDMA":null},"otherValues":[{"name":"","value":"","unit":"","range":"","status":""}],"summary":""}
 
-說明：
-- values 裡放最常見的核心指標（數字型）
-- otherValues 放報告上其他所有項目（包含百分比類如 %NEU、%LYM 等，value 用字串）
-- 如果看到標記為「高」或「低」或紅色標示的項目，在 summary 中特別說明`;
+summary 要求：2-4句繁體中文，說明整體狀況與所有異常項目（紅字/標高/標低），並給出建議。`;
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        messages: [{ role:'user', content:[contentBlock, { type:'text', text:prompt }] }]
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        messages:[{role:'user', content:[block, {type:'text',text:prompt}]}]
       })
     });
 
-    const data = await res.json();
-    if(data.error) {
-      const msg = data.error.message || JSON.stringify(data.error);
-      if(res.status === 401) throw new Error('API 金鑰無效，請至設定重新輸入。');
-      if(res.status === 429) throw new Error('請求太頻繁，請稍後再試。');
-      if(res.status === 400) throw new Error('請求格式錯誤：' + msg);
-      throw new Error(msg);
+    const json = await resp.json();
+
+    if(!resp.ok || json.error){
+      const m = json.error?.message || `HTTP ${resp.status}`;
+      if(resp.status===401) throw new Error('API 金鑰無效或過期，請至設定重新輸入。');
+      if(resp.status===429) throw new Error('請求太頻繁，請稍後幾秒再試。');
+      throw new Error(m);
     }
 
-    const text = data.content?.map(i => i.text || '').join('') || '';
+    const raw = json.content?.map(c=>c.text||'').join('') || '';
     let parsed;
     try {
-      const clean = text.replace(/```json|```/g, '').trim();
+      // strip any accidental markdown fences
+      const clean = raw.replace(/^```[\w]*\n?/,'').replace(/\n?```$/,'').trim();
       parsed = JSON.parse(clean);
-    } catch(e) {
-      parsed = {
-        date: new Date().toISOString().slice(0,10),
-        values: {}, otherValues: [],
-        summary: '無法完整解析報告。請確認上傳的是清晰的血液報告圖片，或嘗試重新上傳。'
-      };
+    } catch(_) {
+      // try to extract JSON substring
+      const m = raw.match(/\{[\s\S]*\}/);
+      if(m) { try{ parsed=JSON.parse(m[0]); }catch(__){} }
     }
-    showScanResult(parsed);
+
+    if(!parsed) throw new Error('AI 回傳格式無法解析，請重新上傳更清晰的圖片。');
+
+    // normalise CRE -> CREA alias
+    if(parsed.values){
+      Object.keys(KEY_ALIAS).forEach(k=>{
+        if(parsed.values[k]!=null && parsed.values[KEY_ALIAS[k]]==null){
+          parsed.values[KEY_ALIAS[k]]=parsed.values[k]; delete parsed.values[k];
+        }
+      });
+    }
+
+    showResult(parsed);
   } catch(e) {
-    document.getElementById('scan-thinking').style.display = 'none';
-    document.getElementById('upload-area').style.display = 'block';
-    alert('分析失敗：' + e.message);
+    document.getElementById('thinking').style.display='none';
+    document.getElementById('upload-area').style.display='block';
+    showErr(e.message);
   }
 }
 
-function loadDemo() {
-  const latest = DEMO_RECORDS[DEMO_RECORDS.length - 1];
-  showScanResult({ ...latest });
-  // Also load all demo records
-  if(records.length === 0) {
-    records = JSON.parse(JSON.stringify(DEMO_RECORDS));
-    saveToStorage();
-  }
-}
+// ── Display Result ────────────────────────────────────────────────────────────
+function showResult(data){
+  document.getElementById('thinking').style.display='none';
+  document.getElementById('result-area').style.display='block';
+  document.getElementById('res-date').textContent = data.date||'—';
+  pending = data;
 
-function showScanResult(data) {
-  document.getElementById('scan-thinking').style.display = 'none';
-  document.getElementById('scan-result').style.display = 'block';
-  document.getElementById('result-date').textContent = data.date || '—';
-  window._pendingRecord = data;
+  const tbody = document.getElementById('res-tbody');
+  tbody.innerHTML='';
 
-  const tbody = document.getElementById('result-tbody');
-  tbody.innerHTML = '';
-
-  Object.entries(INDICATORS).forEach(([key, info]) => {
-    const val = data.values?.[key];
-    if(val === null || val === undefined) return;
-    const status = getStatus(key, val);
-    tbody.innerHTML += `<tr>
-      <td style="font-weight:500;">${info.name}</td>
-      <td style="font-size:14px; font-weight:500;">${val}</td>
-      <td style="color:var(--text-secondary);">${info.unit}</td>
-      <td style="color:var(--text-tertiary); font-size:12px;">${info.low} – ${info.high}</td>
-      <td>${statusBadge(status)}</td>
-    </tr>`;
+  // core indicators
+  Object.entries(IND).forEach(([k,info])=>{
+    const v=data.values?.[k];
+    if(v==null) return;
+    const st=status(k,v);
+    tbody.innerHTML+=`<tr>
+      <td style="font-weight:500">${info.name}</td>
+      <td style="font-size:14px;font-weight:500">${v}</td>
+      <td style="color:var(--tx2)">${info.unit}</td>
+      <td style="color:var(--tx3);font-size:12px">${info.low}–${info.high}</td>
+      <td>${badge(st)}</td></tr>`;
   });
 
-  (data.otherValues || []).forEach(item => {
-    tbody.innerHTML += `<tr>
-      <td style="font-weight:500;">${item.name}</td>
-      <td style="font-size:14px; font-weight:500;">${item.value}</td>
-      <td style="color:var(--text-secondary);">${item.unit || ''}</td>
-      <td style="color:var(--text-tertiary); font-size:12px;">${item.range || ''}</td>
-      <td>${statusBadge('na')}</td>
-    </tr>`;
+  // extra values
+  (data.otherValues||[]).forEach(item=>{
+    if(!item.name) return;
+    const st2 = item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
+    tbody.innerHTML+=`<tr>
+      <td style="font-weight:500">${item.name}</td>
+      <td style="font-size:14px;font-weight:500">${item.value}</td>
+      <td style="color:var(--tx2)">${item.unit||''}</td>
+      <td style="color:var(--tx3);font-size:12px">${item.range||''}</td>
+      <td>${badge(st2)}</td></tr>`;
   });
 
-  document.getElementById('ai-summary-text').textContent = data.summary || '整體狀況請參考各項數值。';
+  document.getElementById('res-summary').textContent = data.summary||'請查看各項數值。';
 }
 
-function editResultDate() {
-  const r = window._pendingRecord;
-  if(!r) return;
-  const d = prompt('輸入日期（YYYY-MM-DD）：', r.date);
-  if(d && /^\d{4}-\d{2}-\d{2}$/.test(d)) {
-    r.date = d;
-    document.getElementById('result-date').textContent = d;
-  }
+function loadDemo(){
+  const d = DEMO[DEMO.length-1];
+  showResult({...d});
+  if(!records.length){ records=JSON.parse(JSON.stringify(DEMO)); save(); }
 }
 
-function saveRecord() {
-  const r = window._pendingRecord;
-  if(!r) return;
-  const idx = records.findIndex(x => x.date === r.date);
-  if(idx >= 0) {
-    if(!confirm('此日期已有紀錄，確定要覆蓋嗎？')) return;
-    records[idx] = JSON.parse(JSON.stringify(r));
-  } else {
-    records.push(JSON.parse(JSON.stringify(r)));
-    records.sort((a,b) => a.date.localeCompare(b.date));
-  }
-  saveToStorage();
-  resetScan();
-  alert('✓ 紀錄已儲存！');
+function editDate(){
+  const r=pending; if(!r) return;
+  const d=prompt('輸入日期（YYYY-MM-DD）：', r.date);
+  if(d&&/^\d{4}-\d{2}-\d{2}$/.test(d)){r.date=d; document.getElementById('res-date').textContent=d;}
 }
 
-function resetScan() {
-  document.getElementById('upload-area').style.display = 'block';
-  document.getElementById('scan-result').style.display = 'none';
-  document.getElementById('scan-thinking').style.display = 'none';
-  document.getElementById('file-input').value = '';
-  window._pendingRecord = null;
+function saveRec(){
+  if(!pending) return;
+  const idx=records.findIndex(x=>x.date===pending.date);
+  if(idx>=0){if(!confirm('此日期已有紀錄，確定覆蓋？'))return; records[idx]=JSON.parse(JSON.stringify(pending));}
+  else{records.push(JSON.parse(JSON.stringify(pending))); records.sort((a,b)=>a.date.localeCompare(b.date));}
+  save(); resetScan(); alert('✓ 紀錄已儲存！');
 }
 
-function getStatus(key, val) {
-  const r = INDICATORS[key];
-  if(!r || val === null || val === undefined) return 'na';
-  if(val < r.low) return 'low';
-  if(val > r.high) return 'high';
-  return 'ok';
+function resetScan(){
+  document.getElementById('upload-area').style.display='block';
+  document.getElementById('result-area').style.display='none';
+  document.getElementById('thinking').style.display='none';
+  document.getElementById('err-area').style.display='none';
+  document.getElementById('finput').value='';
+  pending=null;
 }
 
-function statusBadge(status) {
-  const cfg = {
-    ok:   { cls:'badge-ok',   icon:'ti-check',      label:'正常' },
-    high: { cls:'badge-high', icon:'ti-arrow-up',   label:'偏高' },
-    low:  { cls:'badge-low',  icon:'ti-arrow-down', label:'偏低' },
-    na:   { cls:'badge-na',   icon:'ti-minus',      label:'—'   }
-  };
-  const c = cfg[status] || cfg.na;
-  return `<span class="badge ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i>${c.label}</span>`;
+// ── Status & Badge ────────────────────────────────────────────────────────────
+function status(k,v){
+  const r=IND[k]; if(!r||v==null) return 'na';
+  return v<r.low?'lo':v>r.high?'hi':'ok';
+}
+function badge(st){
+  const m={ok:{cls:'ok',icon:'ti-check',lbl:'正常'},hi:{cls:'hi',icon:'ti-arrow-up',lbl:'偏高'},lo:{cls:'lo',icon:'ti-arrow-down',lbl:'偏低'},na:{cls:'na',icon:'ti-minus',lbl:'—'}};
+  const c=m[st]||m.na;
+  return `<span class="badge ${c.cls}"><i class="ti ${c.icon}" aria-hidden="true"></i>${c.lbl}</span>`;
 }
 
-function renderTrends() {
-  const period = document.getElementById('trend-period').value;
-  const indicator = document.getElementById('trend-indicator').value;
-  const info = INDICATORS[indicator];
-  let data = records.filter(r => r.values?.[indicator] !== null && r.values?.[indicator] !== undefined);
-  if(period !== 'all') data = data.slice(-parseInt(period));
+// ── Trends ────────────────────────────────────────────────────────────────────
+function renderTrends(){
+  const ind=document.getElementById('tr-ind').value;
+  const period=document.getElementById('tr-period').value;
+  const info=IND[ind];
+  let data=records.filter(r=>r.values?.[ind]!=null);
+  if(period!=='all') data=data.slice(-parseInt(period));
 
-  const emptyEl = document.getElementById('trends-empty');
-  const contentEl = document.getElementById('trends-content');
-
-  if(!data.length) {
-    emptyEl.style.display = 'block';
-    contentEl.style.display = 'none';
+  if(!data.length){
+    document.getElementById('tr-empty').style.display='block';
+    document.getElementById('tr-content').style.display='none';
     return;
   }
-  emptyEl.style.display = 'none';
-  contentEl.style.display = 'block';
+  document.getElementById('tr-empty').style.display='none';
+  document.getElementById('tr-content').style.display='block';
 
-  const vals = data.map(r => r.values[indicator]);
-  const latest = vals[vals.length-1];
-  const prev = vals.length > 1 ? vals[vals.length-2] : null;
-  const diff = prev !== null ? (latest - prev) : null;
-  const trend = diff === null ? '—' : diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
-  const status = getStatus(indicator, latest);
+  const vals=data.map(r=>r.values[ind]);
+  const latest=vals[vals.length-1];
+  const prev=vals.length>1?vals[vals.length-2]:null;
+  const diff=prev!=null?+(latest-prev).toFixed(2):null;
+  const arrow=diff==null?'—':diff>0?'↑':diff<0?'↓':'→';
+  const st=status(ind,latest);
 
-  document.getElementById('trend-summary').innerHTML = `
-    <div class="metric-card"><div class="m-label">最新數值</div><div class="m-val">${latest}</div><div class="m-sub">${info.unit}</div></div>
-    <div class="metric-card"><div class="m-label">參考範圍</div><div class="m-val" style="font-size:16px;">${info.low}–${info.high}</div><div class="m-sub">${info.unit}</div></div>
-    <div class="metric-card"><div class="m-label">與上次差異</div><div class="m-val" style="font-size:20px;">${trend}</div><div class="m-sub">${diff!==null ? (diff>0?'+':'')+diff.toFixed(1) : '—'}</div></div>
-    <div class="metric-card"><div class="m-label">狀態</div><div class="m-val" style="font-size:15px; margin-top:6px;">${statusBadge(status)}</div></div>
-  `;
+  document.getElementById('tr-summary').innerHTML=`
+    <div class="mcard"><div class="ml">最新數值</div><div class="mv">${latest}</div><div class="ms">${info?info.unit:''}</div></div>
+    <div class="mcard"><div class="ml">參考範圍</div><div class="mv" style="font-size:16px">${info?info.low+'–'+info.high:'—'}</div></div>
+    <div class="mcard"><div class="ml">與上次差異</div><div class="mv" style="font-size:20px">${arrow}</div><div class="ms">${diff!=null?(diff>0?'+':'')+diff:'—'}</div></div>
+    <div class="mcard"><div class="ml">狀態</div><div class="mv" style="font-size:15px;margin-top:6px">${badge(st)}</div></div>`;
 
-  const labels = data.map(r => r.date.slice(5));
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const lineColors = { ok:'#639922', high:'#E24B4A', low:'#BA7517' };
-  const lineColor = lineColors[status] || '#888';
-  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)';
-  const tickColor = isDark ? '#6b6b67' : '#9a9a96';
+  const labels=data.map(r=>r.date.slice(5));
+  const lc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st]||'#888';
+  const isDark=matchMedia('(prefers-color-scheme:dark)').matches;
+  const gc=isDark?'rgba(255,255,255,.08)':'rgba(0,0,0,.07)';
+  const tc=isDark?'#6b6b67':'#9a9a96';
 
-  if(trendChart) { trendChart.destroy(); trendChart = null; }
-  const ctx = document.getElementById('trendChart').getContext('2d');
-  trendChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        { label: info.name, data: vals, borderColor: lineColor, backgroundColor: lineColor+'18', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: lineColor, pointBorderColor: lineColor, fill: true, tension: 0.35 },
-        { label: '參考上限', data: data.map(() => info.high), borderColor: '#E24B4A55', borderWidth: 1.5, borderDash: [6,4], pointRadius: 0, fill: false },
-        { label: '參考下限', data: data.map(() => info.low),  borderColor: '#BA751755', borderWidth: 1.5, borderDash: [6,4], pointRadius: 0, fill: false }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { grid:{ color:gridColor }, ticks:{ color:tickColor, font:{size:12} } },
-        x: { grid:{ display:false }, ticks:{ color:tickColor, font:{size:12}, autoSkip:false, maxRotation:45 } }
-      }
-    }
+  if(chart){chart.destroy();chart=null;}
+  chart=new Chart(document.getElementById('tChart').getContext('2d'),{
+    type:'line',
+    data:{labels, datasets:[
+      {label:info?info.name:ind, data:vals, borderColor:lc, backgroundColor:lc+'18', borderWidth:2.5, pointRadius:5, pointBackgroundColor:lc, fill:true, tension:0.35},
+      ...(info?[
+        {label:'參考上限', data:data.map(()=>info.high), borderColor:'#E24B4A55', borderWidth:1.5, borderDash:[6,4], pointRadius:0, fill:false},
+        {label:'參考下限', data:data.map(()=>info.low),  borderColor:'#BA751755', borderWidth:1.5, borderDash:[6,4], pointRadius:0, fill:false}
+      ]:[])
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{
+      y:{grid:{color:gc},ticks:{color:tc,font:{size:12}}},
+      x:{grid:{display:false},ticks:{color:tc,font:{size:12},autoSkip:false,maxRotation:45}}
+    }}
   });
 
-  const overview = document.getElementById('indicators-overview');
-  overview.innerHTML = '';
-  Object.entries(INDICATORS).forEach(([key, inf]) => {
-    const recs = records.filter(r => r.values?.[key] !== null && r.values?.[key] !== undefined);
+  const ov=document.getElementById('tr-overview');
+  ov.innerHTML='';
+  Object.entries(IND).forEach(([k,inf])=>{
+    const recs=records.filter(r=>r.values?.[k]!=null);
     if(!recs.length) return;
-    const v = recs[recs.length-1].values[key];
-    const st = getStatus(key, v);
-    const pct = Math.min(100, Math.max(0, ((v - inf.low) / (inf.high - inf.low)) * 100));
-    const barColors = { ok:'#639922', high:'#E24B4A', low:'#BA7517' };
-    const barColor = barColors[st] || '#888';
-    overview.innerHTML += `
-      <div style="margin-bottom:14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px;">
-          <span style="font-weight:500;">${inf.name}</span>
-          <span style="display:flex; align-items:center; gap:8px;">
-            <span style="color:var(--text-secondary);">${v} ${inf.unit}</span>
-            ${statusBadge(st)}
-          </span>
-        </div>
-        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%; background:${barColor};"></div></div>
-        <div class="range-hint">參考範圍：${inf.low} – ${inf.high} ${inf.unit}</div>
-      </div>`;
+    const v=recs[recs.length-1].values[k];
+    const st2=status(k,v);
+    const pct=Math.min(100,Math.max(0,((v-inf.low)/(inf.high-inf.low))*100));
+    const bc={ok:'#639922',hi:'#E24B4A',lo:'#BA7517'}[st2]||'#888';
+    ov.innerHTML+=`<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
+        <span style="font-weight:500">${inf.name}</span>
+        <span style="display:flex;align-items:center;gap:8px"><span style="color:var(--tx2)">${v} ${inf.unit}</span>${badge(st2)}</span>
+      </div>
+      <div class="pbar"><div class="pfill" style="width:${pct}%;background:${bc}"></div></div>
+      <div class="rhint">範圍：${inf.low} – ${inf.high} ${inf.unit}</div>
+    </div>`;
   });
 }
 
-function renderHistory() {
-  const emptyEl = document.getElementById('history-empty');
-  const cardEl  = document.getElementById('history-card');
-  const listEl  = document.getElementById('history-list');
-
-  if(!records.length) {
-    emptyEl.style.display = 'block';
-    cardEl.style.display = 'none';
-    return;
-  }
-  emptyEl.style.display = 'none';
-  cardEl.style.display = 'block';
-
-  const sorted = [...records].reverse();
-  listEl.innerHTML = sorted.map((r, i) => {
-    const realIdx = records.length - 1 - i;
-    const abnormal = Object.entries(r.values || {}).filter(([k,v]) => v!==null && v!==undefined && getStatus(k,v)!=='ok').length;
-    const total = Object.values(r.values || {}).filter(v => v!==null && v!==undefined).length;
-    const dotCls = abnormal === 0 ? 'dot-green' : abnormal <= 2 ? 'dot-amber' : 'dot-red';
-    return `<div class="history-item">
-      <div style="display:flex; align-items:center; gap:12px;">
-        <span class="status-dot ${dotCls}"></span>
+// ── History ───────────────────────────────────────────────────────────────────
+function renderHistory(){
+  const empty=document.getElementById('h-empty');
+  const card=document.getElementById('h-card');
+  const list=document.getElementById('h-list');
+  if(!records.length){empty.style.display='block';card.style.display='none';return;}
+  empty.style.display='none';card.style.display='block';
+  list.innerHTML=[...records].reverse().map((r,i)=>{
+    const ri=records.length-1-i;
+    const ab=Object.entries(r.values||{}).filter(([k,v])=>v!=null&&status(k,v)!=='ok'&&status(k,v)!=='na').length;
+    const tot=Object.values(r.values||{}).filter(v=>v!=null).length;
+    const dc=ab===0?'dg':ab<=2?'da':'dr';
+    return `<div class="hitem">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="sdot ${dc}"></span>
         <div>
-          <div style="font-weight:500; font-size:14px;">${r.date}</div>
-          <div style="font-size:12px; color:var(--text-secondary);">${total} 項數值 · ${abnormal ? abnormal+' 項異常' : '全部正常'}</div>
+          <div style="font-weight:500;font-size:14px">${r.date}</div>
+          <div style="font-size:12px;color:var(--tx2)">${tot} 項數值 · ${ab?ab+' 項異常':'全部正常'}</div>
         </div>
       </div>
-      <div style="display:flex; gap:6px;">
-        <button class="btn btn-sm" onclick="viewRecord(${realIdx})" title="查看"><i class="ti ti-eye" aria-hidden="true"></i></button>
-        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${realIdx})" title="刪除"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm" onclick="viewRec(${ri})" title="查看"><i class="ti ti-eye" aria-hidden="true"></i></button>
+        <button class="btn btn-sm btn-danger" onclick="delRec(${ri})" title="刪除"><i class="ti ti-trash" aria-hidden="true"></i></button>
       </div>
     </div>`;
   }).join('');
 }
 
-function viewRecord(idx) {
-  const r = records[idx];
-  if(!r) return;
-  document.getElementById('view-modal-title').textContent = r.date + ' 血液報告';
-  const body = document.getElementById('view-modal-body');
-  body.innerHTML = '';
-  Object.entries(INDICATORS).forEach(([key, info]) => {
-    const val = r.values?.[key];
-    if(val === null || val === undefined) return;
-    const status = getStatus(key, val);
-    body.innerHTML += `<tr>
-      <td style="font-weight:500;">${info.name}</td>
-      <td style="font-weight:500;">${val}</td>
-      <td style="color:var(--text-secondary);">${info.unit}</td>
-      <td>${statusBadge(status)}</td>
-    </tr>`;
+function viewRec(idx){
+  const r=records[idx]; if(!r) return;
+  document.getElementById('vm-title').textContent=r.date+' 血液報告';
+  const b=document.getElementById('vm-body');
+  b.innerHTML='';
+  Object.entries(IND).forEach(([k,info])=>{
+    const v=r.values?.[k]; if(v==null) return;
+    b.innerHTML+=`<tr><td style="font-weight:500">${info.name}</td><td style="font-weight:500">${v}</td><td style="color:var(--tx2)">${info.unit}</td><td>${badge(status(k,v))}</td></tr>`;
   });
-  (r.otherValues || []).forEach(item => {
-    body.innerHTML += `<tr>
-      <td style="font-weight:500;">${item.name}</td>
-      <td style="font-weight:500;">${item.value}</td>
-      <td style="color:var(--text-secondary);">${item.unit || ''}</td>
-      <td>${statusBadge('na')}</td>
-    </tr>`;
+  (r.otherValues||[]).forEach(item=>{
+    if(!item.name) return;
+    const st2=item.status==='偏高'?'hi':item.status==='偏低'?'lo':item.status==='正常'?'ok':'na';
+    b.innerHTML+=`<tr><td style="font-weight:500">${item.name}</td><td style="font-weight:500">${item.value}</td><td style="color:var(--tx2)">${item.unit||''}</td><td>${badge(st2)}</td></tr>`;
   });
-  document.getElementById('view-modal-summary').textContent = r.summary || '';
-  document.getElementById('view-modal').style.display = 'flex';
+  document.getElementById('vm-summary').textContent=r.summary||'';
+  document.getElementById('modal-view').style.display='flex';
 }
 
-function deleteRecord(idx) {
-  if(!confirm('確定要刪除 ' + records[idx].date + ' 的紀錄？')) return;
-  records.splice(idx, 1);
-  saveToStorage();
-  renderHistory();
+function delRec(idx){
+  if(!confirm('確定刪除 '+records[idx].date+' 的紀錄？'))return;
+  records.splice(idx,1); save(); renderHistory();
 }
 
-function exportData() {
-  const data = { catName, records };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = catName + '_血液紀錄.json';
+// ── Import / Export ───────────────────────────────────────────────────────────
+function exportJSON(){
+  const blob=new Blob([JSON.stringify({catName,records},null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=catName+'_血液紀錄.json';
   a.click();
 }
-
-function importData(e) {
-  const file = e.target.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      if(data.records) {
-        if(confirm('確定要匯入 ' + data.records.length + ' 筆紀錄？這會覆蓋現有資料。')) {
-          records = data.records;
-          if(data.catName) { catName = data.catName; document.getElementById('cat-display-name').textContent = catName; }
-          saveToStorage();
-          renderHistory();
-          alert('✓ 匯入成功！');
-        }
+function importJSON(e){
+  const file=e.target.files[0]; if(!file) return;
+  const rd=new FileReader();
+  rd.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.records&&confirm('確定匯入 '+d.records.length+' 筆紀錄？（會覆蓋現有資料）')){
+        records=d.records;
+        if(d.catName){catName=d.catName; document.getElementById('cat-name').textContent=catName;}
+        save(); renderHistory(); alert('✓ 匯入成功！');
       }
-    } catch(err) { alert('匯入失敗：' + err.message); }
-    e.target.value = '';
+    }catch(err){alert('匯入失敗：'+err.message);}
+    e.target.value='';
   };
-  reader.readAsText(file);
+  rd.readAsText(file);
 }
 
-loadFromStorage();
+// ── Init ──────────────────────────────────────────────────────────────────────
+load();
 </script>
 </body>
 </html>
