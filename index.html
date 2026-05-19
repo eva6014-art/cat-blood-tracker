@@ -421,21 +421,27 @@ async function loadFromDrive(){
   try{
     const found=await findDriveFile();
     if(!found){
-      setSyncStatus('ok','已連結 Google Drive（尚無雲端資料，將於儲存時建立）');
+      setSyncStatus('ok','已連結 Google Drive（本機有 '+records.length+' 筆，正在上傳…）');
+      await syncToDrive();
       return;
     }
     const res=await fetch(`https://www.googleapis.com/drive/v3/files/${driveFileId}?alt=media`,{
       headers:{Authorization:'Bearer '+accessToken}
     });
     const data=await res.json();
-    if(data.records){
-      records=data.records;
+    if(data.records&&data.records.length>0){
+      // 合併：以日期為 key，雲端優先，但也保留本機有而雲端沒有的
+      const merged={};
+      records.forEach(r=>{ merged[r.date]=r; });
+      data.records.forEach(r=>{ merged[r.date]=r; });
+      records=Object.values(merged).sort((a,b)=>a.date.localeCompare(b.date));
       if(data.catName){catName=data.catName;document.getElementById('cat-name').textContent=catName;}
       saveLocal();
     }
     setSyncStatus('ok','已同步 Google Drive · '+records.length+' 筆紀錄');
+    renderHistory();
   }catch(e){
-    setSyncStatus('error','同步失敗：'+e.message);
+    setSyncStatus('ok','讀取雲端失敗，使用本機資料（'+e.message+'）');
   }
 }
 
@@ -468,6 +474,7 @@ async function syncToDrive(){
     if(res.ok){
       const now=new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'});
       setSyncStatus('ok','已同步 · '+now+' · '+records.length+' 筆紀錄');
+      renderHistory();
     }else{
       throw new Error('HTTP '+res.status);
     }
